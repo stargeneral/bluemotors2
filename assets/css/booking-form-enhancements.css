@@ -1,0 +1,98 @@
+/**
+ * Booking Form Enhancements
+ * Smart Scheduler Integration Styles
+ */
+
+
+/* Smart Scheduler Integration */
+.smart-scheduler-integration {
+    background: #f9fafb;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    border: 2px solid #e5e7eb;
+}
+
+.scheduler-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.scheduler-header h4 {
+    color: #1e3a8a;
+    margin: 0 0 8px 0;
+    font-size: 22px;
+}
+
+.scheduler-header p {
+    color: #6b7280;
+    margin: 0;
+    font-size: 16px;
+}
+
+/* Selected Appointment Display */
+.selected-appointment {
+    background: #d1fae5;
+    border: 2px solid #10b981;
+    border-radius: 12px;
+    padding: 24px;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.selected-appointment h4 {
+    color: #065f46;
+    margin: 0 0 16px 0;
+    font-size: 20px;
+}
+
+.appointment-details {
+    font-size: 18px;
+    font-weight: 600;
+    color: #047857;
+    margin-bottom: 20px;
+}
+
+.btn-change-appointment {
+    background: #6b7280;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s ease;
+}
+
+.btn-change-appointment:hover {
+    background: #4b5563;
+}
+
+/* Continue Button Enhancement */
+#btn-continue-to-details {
+    margin-top: 24px;
+    width: 100%;
+    max-width: 300px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .smart-scheduler-integration {
+        padding: 16px;
+    }
+    
+    .ai-scheduler-header h4 {
+        font-size: 18px;
+    }
+    
+    .ai-scheduler-header p {
+        font-size: 14px;
+    }
+    
+    .appointment-details {
+        font-size: 16px;
+    }
+}

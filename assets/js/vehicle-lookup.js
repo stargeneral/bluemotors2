@@ -1,0 +1,701 @@
+/**
+ * Vehicle Lookup JavaScript for Blue Motors Southampton
+ * Enhanced DVLA and DVSA API integration
+ * 
+ * @package BlueMotosSouthampton
+ * @since 1.0.0
+ */
+
+(function($) {
+    'use strict';
+
+    /**
+     * Vehicle Lookup Handler
+     */
+    const VehicleLookup = {
+        
+        // Configuration
+        config: {
+            debounceDelay: 500,
+            minRegistrationLength: 2,
+            maxRegistrationLength: 8,
+            loadingClass: 'bms-loading',
+            errorClass: 'bms-error',
+            successClass: 'bms-success'
+        },
+        
+        // Cache for lookups
+        cache: new Map(),
+        
+        // Current lookup request
+        currentRequest: null,
+        
+        /**
+         * Initialize vehicle lookup functionality
+         */
+        init: function() {
+            this.bindEvents();
+            this.setupRegistrationField();
+            console.log('[BMS Vehicle Lookup] Initialized');
+        },
+        
+        /**
+         * Bind events
+         */
+        bindEvents: function() {
+            // Registration input events
+            $(document).on('input', '.bms-registration-input', this.debounce(this.handleRegistrationInput.bind(this), this.config.debounceDelay));
+            $(document).on('blur', '.bms-registration-input', this.handleRegistrationBlur.bind(this));
+            $(document).on('keypress', '.bms-registration-input', this.handleRegistrationKeypress.bind(this));
+            
+            // Manual lookup button
+            $(document).on('click', '.bms-lookup-button', this.handleManualLookup.bind(this));
+            
+            // Clear vehicle data
+            $(document).on('click', '.bms-clear-vehicle', this.clearVehicleData.bind(this));
+            
+            // MOT history toggle
+            $(document).on('click', '.bms-mot-history-toggle', this.toggleMotHistory.bind(this));
+            
+            // Service recommendation clicks
+            $(document).on('click', '.bms-service-recommendation', this.selectRecommendedService.bind(this));
+        },
+        
+        /**
+         * Setup registration field with formatting and validation
+         */
+        setupRegistrationField: function() {
+            $('.bms-registration-input').each(function() {
+                const $input = $(this);
+                
+                // Add formatting and validation attributes
+                $input.attr({
+                    'maxlength': 8,
+                    'placeholder': 'e.g. AB12 CDE',
+                    'autocomplete': 'off',
+                    'spellcheck': 'false'
+                });
+                
+                // Add wrapper for styling
+                if (!$input.parent().hasClass('bms-registration-wrapper')) {
+                    $input.wrap('<div class="bms-registration-wrapper"></div>');
+                }
+                
+                // Add lookup button if not present
+                if (!$input.siblings('.bms-lookup-button').length) {
+                    $input.after('<button type="button" class="bms-lookup-button" title="Look up vehicle"><span class="dashicons dashicons-search"></span></button>');
+                }
+                
+                // Add status indicator
+                if (!$input.siblings('.bms-lookup-status').length) {
+                    $input.after('<div class="bms-lookup-status"></div>');
+                }
+            });
+        },
+        
+        /**
+         * Handle registration input with debouncing
+         */
+        handleRegistrationInput: function(event) {
+            const $input = $(event.target);
+            const registration = this.formatRegistrationInput($input.val());
+            
+            // Update input with formatted value
+            $input.val(registration);
+            
+            // Validate and lookup if valid
+            if (this.isValidRegistrationLength(registration)) {
+                this.validateAndLookup(registration, $input);
+            } else {
+                this.clearVehicleData();
+                this.updateLookupStatus($input, 'idle');
+            }
+        },
+        
+        /**
+         * Handle registration field blur
+         */
+        handleRegistrationBlur: function(event) {
+            const $input = $(event.target);
+            const registration = $input.val().trim();
+            
+            if (registration && !this.isValidRegistrationFormat(registration)) {
+                this.showError($input, 'Please enter a valid UK vehicle registration');
+            }
+        },
+        
+        /**
+         * Handle keypress events
+         */
+        handleRegistrationKeypress: function(event) {
+            // Allow only alphanumeric characters
+            const char = String.fromCharCode(event.which);
+            if (!/[A-Za-z0-9\s]/.test(char) && event.which !== 8 && event.which !== 0) {
+                event.preventDefault();
+            }
+        },
+        
+        /**
+         * Handle manual lookup button click
+         */
+        handleManualLookup: function(event) {
+            event.preventDefault();
+            const $button = $(event.target).closest('.bms-lookup-button');
+            const $input = $button.siblings('.bms-registration-input');
+            const registration = $input.val().trim();
+            
+            if (!registration) {
+                this.showError($input, 'Please enter a vehicle registration');
+                return;
+            }
+            
+            if (!this.isValidRegistrationFormat(registration)) {
+                this.showError($input, 'Please enter a valid UK vehicle registration');
+                return;
+            }
+            
+            this.performVehicleLookup(registration, $input, true);
+        },
+        
+        /**
+         * Validate registration and perform lookup
+         */
+        validateAndLookup: function(registration, $input) {
+            if (!this.isValidRegistrationFormat(registration)) {
+                return;
+            }
+            
+            // Check cache first
+            if (this.cache.has(registration)) {
+                console.log('[BMS Vehicle Lookup] Using cached data for:', registration);
+                this.handleVehicleData(this.cache.get(registration), $input);
+                return;
+            }
+            
+            // Perform lookup
+            this.performVehicleLookup(registration, $input);
+        },
+        
+        /**
+         * Perform vehicle lookup via AJAX
+         */
+        performVehicleLookup: function(registration, $input, forceRefresh = false) {
+            // Cancel previous request
+            if (this.currentRequest) {
+                this.currentRequest.abort();
+            }
+            
+            // Show loading state
+            this.updateLookupStatus($input, 'loading');
+            
+            console.log('[BMS Vehicle Lookup] Looking up:', registration);
+            
+            // Prepare AJAX request
+            const requestData = {
+                action: 'bms_enhanced_vehicle_lookup',
+                registration: registration,
+                nonce: bmsVehicleLookup.nonce
+            };
+            
+            // Make AJAX request
+            this.currentRequest = $.ajax({
+                url: bmsVehicleLookup.ajaxUrl,
+                type: 'POST',
+                data: requestData,
+                timeout: 30000,
+                success: (response) => {
+                    this.currentRequest = null;
+                    
+                    if (response.success) {
+                        console.log('[BMS Vehicle Lookup] Success:', response.data);
+                        
+                        // Cache the result
+                        this.cache.set(registration, response.data);
+                        
+                        // Handle the vehicle data
+                        this.handleVehicleData(response.data, $input);
+                        
+                        // Update lookup status
+                        this.updateLookupStatus($input, 'success');
+                        
+                    } else {
+                        console.warn('[BMS Vehicle Lookup] Error:', response.data);
+                        this.handleLookupError(response.data, $input);
+                    }
+                },
+                error: (xhr, status, error) => {
+                    this.currentRequest = null;
+                    
+                    if (status !== 'abort') {
+                        console.error('[BMS Vehicle Lookup] AJAX Error:', status, error);
+                        this.handleLookupError({
+                            message: 'Connection error. Please try again.',
+                            code: 'ajax_error'
+                        }, $input);
+                    }
+                }
+            });
+        },
+        
+        /**
+         * Handle successful vehicle data
+         */
+        handleVehicleData: function(vehicleData, $input) {
+            // Update vehicle display
+            this.updateVehicleDisplay(vehicleData);
+            
+            // Update form fields
+            this.updateFormFields(vehicleData);
+            
+            // Show service recommendations
+            this.showServiceRecommendations(vehicleData);
+            
+            // Update pricing if function exists
+            if (typeof window.updatePricingForVehicle === 'function') {
+                window.updatePricingForVehicle(vehicleData);
+            }
+            
+            // Trigger custom event
+            $(document).trigger('bms:vehicleLookupSuccess', [vehicleData]);
+        },
+        
+        /**
+         * Handle lookup error
+         */
+        handleLookupError: function(errorData, $input) {
+            this.updateLookupStatus($input, 'error');
+            this.showError($input, errorData.message || 'Vehicle lookup failed');
+            
+            // Clear vehicle data
+            this.clearVehicleData();
+            
+            // Trigger custom event
+            $(document).trigger('bms:vehicleLookupError', [errorData]);
+        },
+        
+        /**
+         * Update vehicle display
+         */
+        updateVehicleDisplay: function(vehicleData) {
+            const $container = $('.bms-vehicle-display');
+            
+            if (!$container.length) {
+                // Create vehicle display container if it doesn't exist
+                $('.bms-registration-wrapper').after(this.createVehicleDisplayHtml());
+            }
+            
+            // Update vehicle details
+            $('.bms-vehicle-make').text(vehicleData.make || 'Unknown');
+            $('.bms-vehicle-model').text(vehicleData.model || 'Unknown');
+            $('.bms-vehicle-year').text(vehicleData.year || 'Unknown');
+            $('.bms-vehicle-colour').text(vehicleData.colour || 'Unknown');
+            $('.bms-vehicle-fuel').text(vehicleData.fuel_type || 'Unknown');
+            $('.bms-vehicle-engine').text(vehicleData.engine_capacity ? vehicleData.engine_capacity + 'cc' : 'Unknown');
+            
+            // Update MOT information
+            if (vehicleData.mot_status) {
+                $('.bms-mot-status').text(vehicleData.mot_status);
+                $('.bms-mot-status').removeClass('valid invalid unknown').addClass(
+                    vehicleData.mot_status.toLowerCase() === 'valid' ? 'valid' : 
+                    vehicleData.mot_status.toLowerCase().includes('fail') ? 'invalid' : 'unknown'
+                );
+                
+                if (vehicleData.mot_expiry) {
+                    $('.bms-mot-expiry').text(this.formatDate(vehicleData.mot_expiry));
+                }
+            }
+            
+            // Show maintenance score if available
+            if (vehicleData.maintenance_score) {
+                $('.bms-maintenance-score').text(vehicleData.maintenance_score + '%');
+                $('.bms-maintenance-score').removeClass('good average poor').addClass(
+                    vehicleData.maintenance_score >= 80 ? 'good' :
+                    vehicleData.maintenance_score >= 60 ? 'average' : 'poor'
+                );
+            }
+            
+            // Show condition indicators
+            this.updateConditionIndicators(vehicleData);
+            
+            // Show/hide mock data indicator
+            if (vehicleData.using_mock_data) {
+                $('.bms-mock-data-notice').show();
+            } else {
+                $('.bms-mock-data-notice').hide();
+            }
+            
+            // Show the vehicle display
+            $('.bms-vehicle-display').slideDown();
+        },
+        
+        /**
+         * Update form fields with vehicle data
+         */
+        updateFormFields: function(vehicleData) {
+            // Update hidden fields for form submission
+            $('input[name="vehicle_make"]').val(vehicleData.make || '');
+            $('input[name="vehicle_model"]').val(vehicleData.model || '');
+            $('input[name="vehicle_year"]').val(vehicleData.year || '');
+            $('input[name="vehicle_fuel_type"]').val(vehicleData.fuel_type_normalized || 'petrol');
+            $('input[name="vehicle_engine_capacity"]').val(vehicleData.engine_capacity || '');
+            $('input[name="vehicle_category"]').val(vehicleData.vehicle_category || 'standard');
+            $('input[name="pricing_category"]').val(vehicleData.pricing_category || 'standard');
+        },
+        
+        /**
+         * Show service recommendations
+         */
+        showServiceRecommendations: function(vehicleData) {
+            const $container = $('.bms-service-recommendations');
+            
+            if (!vehicleData.service_recommendations || vehicleData.service_recommendations.length === 0) {
+                $container.hide();
+                return;
+            }
+            
+            let html = '<h4>Recommended Services</h4><div class="bms-recommendations-list">';
+            
+            vehicleData.service_recommendations.forEach(recommendation => {
+                html += `
+                    <div class="bms-service-recommendation ${recommendation.type}" data-service="${recommendation.service}">
+                        <span class="bms-recommendation-icon"></span>
+                        <div class="bms-recommendation-content">
+                            <strong>${this.formatServiceName(recommendation.service)}</strong>
+                            <p>${recommendation.description}</p>
+                        </div>
+                        <span class="bms-recommendation-priority priority-${recommendation.priority}"></span>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            
+            $container.html(html).show();
+        },
+        
+        /**
+         * Update condition indicators
+         */
+        updateConditionIndicators: function(vehicleData) {
+            // Risk assessment
+            if (vehicleData.risk_assessment) {
+                $('.bms-risk-level').text(vehicleData.risk_assessment.toUpperCase());
+                $('.bms-risk-level').removeClass('low medium high').addClass(vehicleData.risk_assessment);
+            }
+            
+            // Advisory notices count
+            if (vehicleData.advisory_count !== undefined) {
+                $('.bms-advisory-count').text(vehicleData.advisory_count);
+                $('.bms-advisories-indicator').toggle(vehicleData.advisory_count > 0);
+            }
+            
+            // Overall condition score
+            if (vehicleData.overall_condition_score) {
+                $('.bms-condition-score').text(vehicleData.overall_condition_score + '%');
+                $('.bms-condition-score').removeClass('excellent good fair poor').addClass(
+                    vehicleData.overall_condition_score >= 90 ? 'excellent' :
+                    vehicleData.overall_condition_score >= 75 ? 'good' :
+                    vehicleData.overall_condition_score >= 60 ? 'fair' : 'poor'
+                );
+            }
+        },
+        
+        /**
+         * Clear vehicle data
+         */
+        clearVehicleData: function() {
+            $('.bms-vehicle-display').slideUp();
+            $('.bms-service-recommendations').hide();
+            $('.bms-mot-history-details').hide();
+            
+            // Clear form fields
+            $('input[name^="vehicle_"]').val('');
+            
+            // Trigger custom event
+            $(document).trigger('bms:vehicleDataCleared');
+        },
+        
+        /**
+         * Toggle MOT history display
+         */
+        toggleMotHistory: function(event) {
+            event.preventDefault();
+            const $button = $(event.target);
+            const registration = $('.bms-registration-input').val().trim();
+            
+            if (!registration) {
+                return;
+            }
+            
+            const $details = $('.bms-mot-history-details');
+            
+            if ($details.is(':visible')) {
+                $details.slideUp();
+                $button.text('Show MOT History');
+            } else {
+                this.loadMotHistory(registration, $details, $button);
+            }
+        },
+        
+        /**
+         * Load MOT history
+         */
+        loadMotHistory: function(registration, $container, $button) {
+            $button.text('Loading...');
+            
+            $.ajax({
+                url: bmsVehicleLookup.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'bms_get_mot_history',
+                    registration: registration,
+                    nonce: bmsVehicleLookup.nonce
+                },
+                success: (response) => {
+                    if (response.success) {
+                        this.displayMotHistory(response.data, $container);
+                        $container.slideDown();
+                        $button.text('Hide MOT History');
+                    } else {
+                        $button.text('MOT History Unavailable');
+                        console.warn('[BMS MOT History] Error:', response.data);
+                    }
+                },
+                error: (xhr, status, error) => {
+                    $button.text('Show MOT History');
+                    console.error('[BMS MOT History] AJAX Error:', status, error);
+                }
+            });
+        },
+        
+        /**
+         * Display MOT history
+         */
+        displayMotHistory: function(motData, $container) {
+            let html = '<div class="bms-mot-summary">';
+            html += `<h4>MOT History Summary</h4>`;
+            html += `<p>Total Tests: ${motData.summary.total_tests}, Passes: ${motData.summary.passes}, Fails: ${motData.summary.fails}</p>`;
+            html += '</div>';
+            
+            if (motData.mot_history && motData.mot_history.length > 0) {
+                html += '<div class="bms-mot-tests">';
+                
+                motData.mot_history.forEach(test => {
+                    html += `
+                        <div class="bms-mot-test ${test.result.toLowerCase()}">
+                            <div class="bms-test-header">
+                                <span class="bms-test-date">${this.formatDate(test.date)}</span>
+                                <span class="bms-test-result">${test.result}</span>
+                                <span class="bms-test-mileage">${test.mileage.value.toLocaleString()} ${test.mileage.unit}</span>
+                            </div>
+                    `;
+                    
+                    if (test.defects && test.defects.length > 0) {
+                        html += '<div class="bms-test-defects">';
+                        test.defects.forEach(defect => {
+                            html += `<div class="bms-defect ${defect.type.toLowerCase()}">${defect.text}</div>`;
+                        });
+                        html += '</div>';
+                    }
+                    
+                    html += '</div>';
+                });
+                
+                html += '</div>';
+            }
+            
+            $container.html(html);
+        },
+        
+        /**
+         * Select recommended service
+         */
+        selectRecommendedService: function(event) {
+            const $recommendation = $(event.currentTarget);
+            const serviceType = $recommendation.data('service');
+            
+            // Update service selection if function exists
+            if (typeof window.selectService === 'function') {
+                window.selectService(serviceType);
+            }
+            
+            // Trigger custom event
+            $(document).trigger('bms:serviceRecommendationSelected', [serviceType]);
+        },
+        
+        /**
+         * Update lookup status indicator
+         */
+        updateLookupStatus: function($input, status) {
+            const $statusIndicator = $input.siblings('.bms-lookup-status');
+            const $button = $input.siblings('.bms-lookup-button');
+            
+            $statusIndicator.removeClass('idle loading success error').addClass(status);
+            
+            switch (status) {
+                case 'loading':
+                    $statusIndicator.html('<span class="spinner"></span>');
+                    $button.prop('disabled', true);
+                    break;
+                case 'success':
+                    $statusIndicator.html('<span class="dashicons dashicons-yes-alt"></span>');
+                    $button.prop('disabled', false);
+                    break;
+                case 'error':
+                    $statusIndicator.html('<span class="dashicons dashicons-warning"></span>');
+                    $button.prop('disabled', false);
+                    break;
+                default:
+                    $statusIndicator.html('');
+                    $button.prop('disabled', false);
+            }
+        },
+        
+        /**
+         * Show error message
+         */
+        showError: function($input, message) {
+            // Remove existing error
+            $input.siblings('.bms-error-message').remove();
+            
+            // Add error message
+            $input.after(`<div class="bms-error-message">${message}</div>`);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                $input.siblings('.bms-error-message').fadeOut(() => {
+                    $(this).remove();
+                });
+            }, 5000);
+        },
+        
+        /**
+         * Format registration input
+         */
+        formatRegistrationInput: function(value) {
+            // Remove non-alphanumeric characters and convert to uppercase
+            return value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+        },
+        
+        /**
+         * Check if registration length is valid for lookup
+         */
+        isValidRegistrationLength: function(registration) {
+            const length = registration.length;
+            return length >= this.config.minRegistrationLength && length <= this.config.maxRegistrationLength;
+        },
+        
+        /**
+         * Validate UK registration format
+         */
+        isValidRegistrationFormat: function(registration) {
+            const clean = registration.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+            
+            if (clean.length < 2 || clean.length > 8) {
+                return false;
+            }
+            
+            const patterns = [
+                /^[A-Z]{2}[0-9]{2}[A-Z]{3}$/, // Current: AB12CDE
+                /^[A-Z][0-9]{1,3}[A-Z]{3}$/,  // Prefix: A123BCD
+                /^[A-Z]{3}[0-9]{1,3}[A-Z]$/,  // Suffix: ABC123D
+                /^[0-9]{1,4}[A-Z]{1,3}$/,     // Dateless: 1234AB
+                /^[A-Z]{1,3}[0-9]{1,4}$/      // Early: AB1234
+            ];
+            
+            return patterns.some(pattern => pattern.test(clean));
+        },
+        
+        /**
+         * Format date for display
+         */
+        formatDate: function(dateString) {
+            if (!dateString) return 'Unknown';
+            
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            });
+        },
+        
+        /**
+         * Format service name for display
+         */
+        formatServiceName: function(serviceName) {
+            return serviceName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        },
+        
+        /**
+         * Create vehicle display HTML
+         */
+        createVehicleDisplayHtml: function() {
+            return `
+                <div class="bms-vehicle-display" style="display: none;">
+                    <div class="bms-vehicle-header">
+                        <h4>Vehicle Details</h4>
+                        <button type="button" class="bms-clear-vehicle" title="Clear vehicle data">×</button>
+                    </div>
+                    <div class="bms-vehicle-info">
+                        <div class="bms-vehicle-basic">
+                            <span class="bms-vehicle-make"></span>
+                            <span class="bms-vehicle-model"></span>
+                            (<span class="bms-vehicle-year"></span>)
+                        </div>
+                        <div class="bms-vehicle-details">
+                            <span class="bms-vehicle-colour"></span> •
+                            <span class="bms-vehicle-fuel"></span> •
+                            <span class="bms-vehicle-engine"></span>
+                        </div>
+                        <div class="bms-vehicle-mot">
+                            MOT: <span class="bms-mot-status"></span>
+                            <span class="bms-mot-expiry-label">Expires: <span class="bms-mot-expiry"></span></span>
+                        </div>
+                        <div class="bms-vehicle-indicators">
+                            <div class="bms-maintenance-indicator">
+                                Maintenance Score: <span class="bms-maintenance-score"></span>
+                            </div>
+                            <div class="bms-risk-indicator">
+                                Risk Level: <span class="bms-risk-level"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bms-vehicle-actions">
+                        <button type="button" class="bms-mot-history-toggle">Show MOT History</button>
+                    </div>
+                    <div class="bms-mot-history-details" style="display: none;"></div>
+                    <div class="bms-mock-data-notice" style="display: none;">
+                        <small>⚠ Using demo data - configure API keys for live vehicle information</small>
+                    </div>
+                </div>
+                <div class="bms-service-recommendations" style="display: none;"></div>
+            `;
+        },
+        
+        /**
+         * Debounce function
+         */
+        debounce: function(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+    };
+
+    // Initialize when DOM is ready
+    $(document).ready(function() {
+        VehicleLookup.init();
+    });
+
+    // Expose to global scope for external access
+    window.BMS = window.BMS || {};
+    window.BMS.VehicleLookup = VehicleLookup;
+
+})(jQuery);

@@ -1,0 +1,88 @@
+# WordPress
+.htaccess
+wp-config.php
+wp-content/uploads/
+wp-content/blogs.dir/
+wp-content/upgrade/
+wp-content/backup-db/
+wp-content/cache/
+wp-content/temp/
+
+# Plugin specific - Sensitive Files
+vendor/service-account-credentials.json
+*credentials*.json
+*secret*.json
+*.log
+
+# Configuration files with potential secrets
+wp-config.php
+config.php
+*-config.php
+
+# Composer
+/vendor/
+composer.phar
+
+# Node modules (if any)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+
+# Claude Code specific
+.claude/settings.local.json
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Build files
+*.map
+build/*.map
+
+# Sensitive data
+*.env
+.env.local
+.env.*.local
+*secret*
+*credentials*
+*api-key*
+
+# Testing files (optional - remove if you want to track tests)
+# testing/
+# archive/
+
+# Local development
+*.local
+local-config.php
+
+# Backup files
+*.bak
+*.backup
+*.sql
+*.sql.gz
+
+# Logs
+*.log
+logs/
+error_log
+debug.log

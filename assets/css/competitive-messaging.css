@@ -1,0 +1,707 @@
+/**
+ * Professional Messaging Styles
+ * Blue Motors Southampton - Professional Auto Services
+ * 
+ * Styles for highlighting our professional features
+ */
+
+/* ===== PROFESSIONAL HEADER ===== */
+
+.competitive-header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    color: white;
+    padding: 24px;
+    border-radius: 12px;
+    margin: 0 0 30px 0;
+    box-shadow: 0 4px 16px rgba(30, 58, 138, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.competitive-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transform: translate(30px, -30px);
+}
+
+.advantage-message h3 {
+    margin: 0 0 20px 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.advantages-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+}
+
+.advantage-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 12px 16px;
+    border-radius: 8px;
+    backdrop-filter: blur(4px);
+    transition: all 0.3s ease;
+}
+
+.advantage-item:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+}
+
+.advantage-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.advantage-text {
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.header-cta {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.header-cta p {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+/* ===== PROFESSIONAL NOTES ===== */
+
+.competitive-note {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    margin: 12px 0;
+    animation: slideInUp 0.4s ease-out;
+}
+
+.competitive-note-advantage {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.competitive-note-major-advantage {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+.competitive-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.competitive-text {
+    flex: 1;
+    line-height: 1.4;
+}
+
+/* ===== SUCCESS POPUPS ===== */
+
+.competitive-success-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.popup-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+}
+
+.popup-content {
+    position: relative;
+    background: white;
+    border-radius: 16px;
+    max-width: 480px;
+    width: 90%;
+    max-height: 80vh;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    animation: slideInScale 0.4s ease-out;
+}
+
+.popup-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+}
+
+.popup-header h4 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.popup-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s ease;
+}
+
+.popup-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.popup-body {
+    padding: 24px;
+}
+
+.popup-message {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 12px 0;
+    line-height: 1.5;
+}
+
+.popup-subtitle {
+    font-size: 0.95rem;
+    color: #6b7280;
+    margin: 0 0 20px 0;
+    line-height: 1.4;
+}
+
+.popup-comparison {
+    display: grid;
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.comparison-item {
+    padding: 12px 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.comparison-item.our-way {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #166534;
+}
+
+.comparison-item.f1-way {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+}
+
+.comparison-item strong {
+    flex-shrink: 0;
+    font-size: 14px;
+}
+
+.comparison-item span {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.popup-footer {
+    padding: 16px 24px;
+    background: #f8fafc;
+    text-align: center;
+}
+
+.popup-footer .btn-primary {
+    min-width: 200px;
+}
+
+/* ===== INLINE SUCCESS MESSAGES ===== */
+
+.competitive-success-inline {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border: 2px solid #22c55e;
+    border-radius: 12px;
+    padding: 16px;
+    margin: 16px 0;
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.4s ease-out;
+}
+
+.competitive-success-inline.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.success-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.success-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.success-text {
+    flex: 1;
+}
+
+.success-text h5 {
+    margin: 0 0 6px 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #166534;
+}
+
+.success-text p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #166534;
+    line-height: 1.4;
+}
+
+.success-close {
+    background: none;
+    border: none;
+    color: #22c55e;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 4px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.success-close:hover {
+    background: rgba(34, 197, 94, 0.1);
+    color: #166534;
+}
+
+/* ===== COMPARISON TABLE ===== */
+
+.service-comparison-table {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin: 30px 0;
+}
+
+.comparison-container h4 {
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+    color: white;
+    margin: 0;
+    padding: 20px 24px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.comparison-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    border-collapse: collapse;
+}
+
+.comparison-header {
+    display: contents;
+}
+
+.comparison-header > div {
+    background: #f8fafc;
+    padding: 16px 20px;
+    font-weight: 700;
+    color: #374151;
+    border-bottom: 2px solid #e5e7eb;
+    font-size: 14px;
+}
+
+.comparison-row {
+    display: contents;
+}
+
+.comparison-row > div {
+    padding: 16px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+}
+
+.comparison-row:nth-child(even) > div {
+    background: #fafbfc;
+}
+
+.comparison-row .feature {
+    font-weight: 600;
+    color: #374151;
+}
+
+.comparison-row .us.advantage {
+    color: #166534;
+    font-weight: 600;
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+}
+
+.comparison-row .them.limitation {
+    color: #dc2626;
+    font-weight: 600;
+    background: linear-gradient(135deg, #fef2f2, #fee2e2);
+}
+
+.comparison-conclusion {
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    border: 2px solid #0ea5e9;
+    padding: 16px 24px;
+    text-align: center;
+    color: #0c4a6e;
+    font-weight: 600;
+}
+
+.comparison-conclusion p {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+/* ===== TEMPORARY MESSAGES ===== */
+
+.competitive-temp-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    z-index: 1000;
+    transform: translateX(100%);
+    opacity: 0;
+    transition: all 0.4s ease-out;
+    max-width: 320px;
+}
+
+.competitive-temp-message.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.temp-message-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.temp-message-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.temp-message-text {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+/* ===== ANIMATIONS ===== */
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* ===== MOBILE RESPONSIVE ===== */
+
+@media (max-width: 768px) {
+    .competitive-header {
+        padding: 20px 16px;
+        margin: 0 0 24px 0;
+    }
+    
+    .advantage-message h3 {
+        font-size: 1.25rem;
+        margin-bottom: 16px;
+    }
+    
+    .advantages-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin: 16px 0;
+    }
+    
+    .advantage-item {
+        padding: 10px 14px;
+        font-size: 14px;
+    }
+    
+    .advantage-icon {
+        font-size: 1.25rem;
+    }
+    
+    .competitive-note {
+        font-size: 12px;
+        padding: 8px 12px;
+        margin: 8px 0;
+    }
+    
+    .popup-content {
+        width: 95%;
+        margin: 20px;
+    }
+    
+    .popup-header {
+        padding: 16px 20px;
+    }
+    
+    .popup-header h4 {
+        font-size: 1.1rem;
+    }
+    
+    .popup-body {
+        padding: 20px;
+    }
+    
+    .popup-message {
+        font-size: 1rem;
+    }
+    
+    .popup-subtitle {
+        font-size: 0.9rem;
+    }
+    
+    .comparison-item {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+    
+    .comparison-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .comparison-header > div,
+    .comparison-row > div {
+        padding: 12px 16px;
+        text-align: left;
+    }
+    
+    .comparison-row .feature {
+        background: #1e3a8a;
+        color: white;
+        font-weight: 700;
+    }
+    
+    .competitive-success-inline {
+        margin: 12px 0;
+        padding: 14px;
+    }
+    
+    .success-text h5 {
+        font-size: 1rem;
+    }
+    
+    .success-text p {
+        font-size: 0.9rem;
+    }
+    
+    .competitive-temp-message {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+        transform: translateY(-100%);
+    }
+    
+    .competitive-temp-message.show {
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 480px) {
+    .competitive-header {
+        padding: 16px 12px;
+    }
+    
+    .advantage-message h3 {
+        font-size: 1.1rem;
+    }
+    
+    .advantage-item {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+    
+    .competitive-note {
+        font-size: 11px;
+        padding: 6px 10px;
+    }
+    
+    .popup-content {
+        margin: 10px;
+    }
+    
+    .popup-header {
+        padding: 12px 16px;
+    }
+    
+    .popup-body {
+        padding: 16px;
+    }
+    
+    .comparison-conclusion {
+        padding: 12px 16px;
+        font-size: 0.95rem;
+    }
+}
+
+/* ===== PRINT STYLES ===== */
+
+@media print {
+    .competitive-success-popup,
+    .competitive-temp-message,
+    .competitive-success-inline {
+        display: none;
+    }
+    
+    .competitive-header {
+        background: #1e3a8a;
+        color: white;
+        box-shadow: none;
+    }
+    
+    .comparison-grid {
+        border: 1px solid #ccc;
+    }
+    
+    .comparison-row > div {
+        border: 1px solid #ccc;
+    }
+}
+
+/* ===== HIGH CONTRAST MODE ===== */
+
+@media (prefers-contrast: high) {
+    .competitive-header {
+        border: 3px solid white;
+    }
+    
+    .advantage-item {
+        border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .competitive-note {
+        border-width: 2px;
+        font-weight: 700;
+    }
+    
+    .popup-content {
+        border: 3px solid #1e3a8a;
+    }
+    
+    .comparison-grid {
+        border: 2px solid #374151;
+    }
+}
+
+/* ===== REDUCED MOTION ===== */
+
+@media (prefers-reduced-motion: reduce) {
+    .competitive-note,
+    .competitive-success-inline,
+    .competitive-temp-message {
+        animation: none;
+        transition: none;
+    }
+    
+    .popup-content {
+        animation: none;
+    }
+    
+    .competitive-success-popup {
+        animation: none;
+    }
+    
+    .advantage-item:hover,
+    .competitive-note:hover {
+        transform: none;
+    }
+}

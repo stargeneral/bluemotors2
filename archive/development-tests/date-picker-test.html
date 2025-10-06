@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Date Picker Fix Test</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Date Picker Fix Verification</h1>
+    <p><strong>Test the tyre booking date picker at:</strong> <a href="http://localhost:10010/testpage2" target="_blank">localhost:10010/testpage2</a></p>
+    
+    <h2>✅ Fixes Applied:</h2>
+    <ul>
+        <li>✅ Fixed date range logic (dates from tomorrow onwards should be selectable)</li>
+        <li>✅ Replaced vanilla JavaScript with jQuery-based event handling</li>
+        <li>✅ Added proper slideUp/slideDown animations</li>
+        <li>✅ Disabled conflicting mobile date picker for tyre booking</li>
+        <li>✅ Fixed calendar icon clickability</li>
+        <li>✅ Improved event delegation and click outside behavior</li>
+    </ul>
+    
+    <h2>🧪 Testing Steps:</h2>
+    <ol>
+        <li><strong>Desktop Test:</strong>
+            <ul>
+                <li>Enter registration: VF19XKX</li>
+                <li>Select any tyre type</li>
+                <li>Navigate to fitment appointment</li>
+                <li>Click BOTH date input field AND calendar icon</li>
+                <li>Calendar should open smoothly</li>
+                <li>Dates from tomorrow onwards should be clickable (not greyed out)</li>
+                <li>Calendar should stay open when clicking inside</li>
+                <li>Month navigation should work smoothly</li>
+            </ul>
+        </li>
+        <li><strong>Mobile Test:</strong>
+            <ul>
+                <li>Same steps on mobile device</li>
+                <li>Should use the unified calendar (not mobile popup)</li>
+                <li>Touch interactions should work properly</li>
+            </ul>
+        </li>
+    </ol>
+    
+    <h2>🔧 Key Changes Made:</h2>
+    <pre>
+// Fixed date comparison logic
+const isPast = date < this.minDate; // Now allows tomorrow+ selections
+
+// Switched to jQuery for reliability  
+jQuery(dateInput).on('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    this.showCalendar();
+});
+
+// Added smooth animations
+jQuery('#fitting-calendar-popup').slideDown();
+
+// Disabled conflicting mobile picker for tyre booking
+if (document.querySelector('#fitting-appointment')) {
+    console.log('Tyre booking detected - using unified calendar');
+    return; // Don't initialize mobile picker
+}
+    </pre>
+    
+    <h2>🚀 Expected Results:</h2>
+    <ul>
+        <li>✅ Date field click opens calendar</li>
+        <li>✅ Calendar icon click opens calendar</li>
+        <li>✅ Calendar stays open when clicking inside</li>
+        <li>✅ Tomorrow and future dates are selectable</li>
+        <li>✅ Month navigation works smoothly</li>
+        <li>✅ No mobile picker conflicts</li>
+        <li>✅ Works on both desktop and mobile</li>
+    </ul>
+</body>
+</html>

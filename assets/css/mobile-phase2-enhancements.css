@@ -1,0 +1,931 @@
+/**
+ * Phase 2: Mobile Enhancements - Smart Scheduler, Calendar & Loading States
+ * Blue Motors Southampton WordPress Plugin
+ * 
+ * Version: 1.4.1
+ * Created: October 2, 2025
+ * 
+ * PHASE 2 IMPROVEMENTS:
+ * 1. Smart Scheduler Widget Mobile Optimization
+ * 2. Calendar Picker Touch Interactions
+ * 3. Enhanced Loading States & AJAX Feedback
+ * 4. Stripe Payment Form Mobile Verification
+ * 
+ * KEY PRINCIPLES:
+ * âœ… Additive approach - no breaking changes
+ * âœ… Mobile-first - optimized for touch
+ * âœ… Progressive enhancement
+ * âœ… Preserves all existing class names
+ */
+
+/* ===========================================================================
+   1. SMART SCHEDULER WIDGET - MOBILE OPTIMIZATION
+   =========================================================================== */
+
+/**
+ * Smart Scheduler Container - Mobile Portrait
+ * - Improved spacing for small screens
+ * - Better touch targets
+ * - Enhanced visual hierarchy
+ */
+@media (max-width: 767px) and (orientation: portrait) {
+    .bms-smart-scheduler-widget {
+        padding: 16px !important;
+        margin: 16px 0 !important;
+        border-radius: 8px !important;
+    }
+    
+    .smart-scheduler-header h3 {
+        font-size: 18px !important;
+        line-height: 1.4 !important;
+    }
+    
+    .scheduler-header h4 {
+        font-size: 16px !important;
+        margin-bottom: 8px !important;
+    }
+    
+    .scheduler-header p {
+        font-size: 14px !important;
+        margin-bottom: 0 !important;
+    }
+}
+
+/**
+ * Service Selection & Display - Mobile
+ * - Larger touch targets for dropdowns
+ * - Clearer selected service display
+ */
+@media (max-width: 768px) {
+    .bms-smart-scheduler-widget .form-control {
+        min-height: 48px !important;
+        font-size: 16px !important; /* Prevents iOS zoom */
+        padding: 12px 16px !important;
+        -webkit-appearance: none !important;
+        -moz-appearance: none !important;
+        appearance: none !important;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath fill='%23374151' d='M0 0l6 8 6-8z'/%3E%3C/svg%3E") !important;
+        background-repeat: no-repeat !important;
+        background-position: right 16px center !important;
+        background-size: 12px !important;
+        padding-right: 40px !important;
+    }
+    
+    .selected-service-display {
+        padding: 12px !important;
+        margin-bottom: 16px !important;
+        border-radius: 8px !important;
+    }
+    
+    .selected-service-display h4 {
+        font-size: 15px !important;
+        margin-bottom: 6px !important;
+    }
+    
+    .selected-service-display p {
+        font-size: 14px !important;
+    }
+}
+
+/**
+ * Competitive Advantage Banner - Mobile
+ * - Smaller, more compact on mobile
+ * - Maintains visual impact
+ */
+@media (max-width: 768px) {
+    .competitive-advantage {
+        padding: 10px 12px !important;
+        margin: 12px 0 !important;
+        font-size: 13px !important;
+        border-radius: 6px !important;
+    }
+}
+
+/**
+ * Form Buttons - Mobile Enhancement
+ * - Minimum 48px height for touch
+ * - Full width on mobile for easier tapping
+ * - Clear visual states
+ */
+@media (max-width: 768px) {
+    .bms-smart-scheduler-widget .btn {
+        min-height: 48px !important;
+        width: 100% !important;
+        margin-bottom: 12px !important;
+        font-size: 16px !important;
+        padding: 14px 20px !important;
+        touch-action: manipulation !important;
+        -webkit-tap-highlight-color: transparent !important;
+    }
+    
+    .bms-smart-scheduler-widget .btn:active {
+        transform: scale(0.98) !important;
+    }
+    
+    .bms-smart-scheduler-widget .btn-small {
+        min-height: 40px !important;
+        padding: 10px 16px !important;
+        font-size: 14px !important;
+    }
+}
+
+/* ===========================================================================
+   2. CALENDAR PICKER - TOUCH OPTIMIZATION
+   =========================================================================== */
+
+/**
+ * Date Picker Wrapper - Mobile
+ * - Better touch target for input
+ * - Larger calendar icon
+ */
+@media (max-width: 768px) {
+    .date-picker-wrapper {
+        margin-bottom: 16px !important;
+    }
+    
+    .date-picker-input {
+        min-height: 48px !important;
+        font-size: 16px !important; /* Prevents iOS zoom */
+        padding: 12px 48px 12px 16px !important;
+        cursor: pointer !important;
+    }
+    
+    .calendar-icon {
+        font-size: 24px !important;
+        right: 16px !important;
+        width: 32px !important;
+        height: 32px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        pointer-events: auto !important;
+        cursor: pointer !important;
+    }
+    
+    .date-help-text {
+        font-size: 13px !important;
+        margin-top: 6px !important;
+        color: #6b7280 !important;
+    }
+}
+
+/**
+ * Calendar Popup - Mobile Enhanced
+ * - Larger, easier to use on mobile
+ * - Better touch targets for date selection
+ * - Improved navigation buttons
+ */
+@media (max-width: 768px) {
+    .calendar-popup {
+        position: fixed !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        width: 90% !important;
+        max-width: 360px !important;
+        padding: 20px !important;
+        margin-top: 0 !important;
+        z-index: 9999 !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
+    }
+    
+    /* Add overlay behind calendar */
+    .calendar-popup::before {
+        content: '' !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        background: rgba(0, 0, 0, 0.5) !important;
+        z-index: -1 !important;
+    }
+}
+
+/**
+ * Calendar Navigation - Touch-Friendly
+ * - Larger navigation buttons
+ * - Better spacing
+ */
+@media (max-width: 768px) {
+    .calendar-header {
+        margin-bottom: 16px !important;
+        gap: 12px !important;
+    }
+    
+    .cal-nav {
+        width: 40px !important;
+        height: 40px !important;
+        font-size: 18px !important;
+        border-radius: 6px !important;
+        touch-action: manipulation !important;
+        -webkit-tap-highlight-color: transparent !important;
+    }
+    
+    .cal-nav:active {
+        transform: scale(0.95) !important;
+    }
+    
+    .cal-month-year {
+        font-size: 16px !important;
+        font-weight: 700 !important;
+    }
+}
+
+/**
+ * Calendar Days Grid - Mobile Touch Optimization
+ * - Larger day cells (minimum 40x40px)
+ * - Better spacing between cells
+ * - Clear visual feedback
+ */
+@media (max-width: 768px) {
+    .calendar-days {
+        gap: 6px !important;
+    }
+    
+    .cal-day-header {
+        padding: 8px 4px !important;
+        font-size: 11px !important;
+        font-weight: 700 !important;
+    }
+    
+    .cal-day {
+        min-height: 40px !important;
+        min-width: 40px !important;
+        padding: 10px 4px !important;
+        font-size: 15px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        touch-action: manipulation !important;
+        -webkit-tap-highlight-color: transparent !important;
+    }
+    
+    .cal-day:not(.disabled):not(.other-month):active {
+        transform: scale(0.95) !important;
+    }
+    
+    .cal-day.today {
+        font-weight: 700 !important;
+        border: 2px solid #fbbf24 !important;
+    }
+    
+    .cal-day.selected {
+        font-weight: 700 !important;
+        transform: scale(1.05) !important;
+    }
+}
+
+/**
+ * Calendar - Extra Small Screens
+ * - Adjust for very small devices (< 380px)
+ */
+@media (max-width: 380px) {
+    .calendar-popup {
+        width: 95% !important;
+        padding: 16px !important;
+    }
+    
+    .cal-day {
+        min-height: 36px !important;
+        min-width: 36px !important;
+        font-size: 14px !important;
+    }
+    
+    .calendar-days {
+        gap: 4px !important;
+    }
+}
+
+/* ===========================================================================
+   3. TIME SLOTS - MOBILE OPTIMIZATION
+   =========================================================================== */
+
+/**
+ * Time Slots Grid - Responsive Layout
+ * - 2 columns on small mobile
+ * - 3 columns on larger mobile
+ * - Maintains touch targets
+ */
+@media (max-width: 480px) {
+    .time-slots-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+        padding: 12px 0 !important;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+    .time-slots-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 12px !important;
+        padding: 16px 0 !important;
+    }
+}
+
+/**
+ * Time Slot Cards - Touch-Friendly
+ * - Minimum 48px height
+ * - Clear tap feedback
+ * - Better visual hierarchy
+ */
+@media (max-width: 768px) {
+    .time-slot {
+        min-height: 48px !important;
+        padding: 10px 8px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 4px !important;
+        touch-action: manipulation !important;
+        -webkit-tap-highlight-color: transparent !important;
+        transition: all 0.2s ease !important;
+    }
+    
+    .time-slot:active:not(.disabled) {
+        transform: scale(0.97) !important;
+    }
+    
+    .slot-time {
+        font-size: 15px !important;
+        font-weight: 700 !important;
+        line-height: 1.2 !important;
+    }
+    
+    .slot-status {
+        font-size: 10px !important;
+        line-height: 1.2 !important;
+    }
+    
+    .btn-select-time {
+        min-height: 36px !important;
+        padding: 8px 12px !important;
+        font-size: 13px !important;
+        margin-top: 4px !important;
+        width: 100% !important;
+    }
+}
+
+/**
+ * Selected Date Header - Mobile
+ * - Better layout on small screens
+ * - Stack on very small devices
+ */
+@media (max-width: 480px) {
+    .selected-date-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+    }
+    
+    .selected-date-header h4 {
+        font-size: 15px !important;
+        line-height: 1.4 !important;
+    }
+    
+    .change-date-btn {
+        width: 100% !important;
+        min-height: 40px !important;
+    }
+}
+
+/**
+ * Day Suggestions (Alternative View) - Mobile
+ * - Improved card layout
+ * - Better spacing
+ */
+@media (max-width: 768px) {
+    .suggestion-day {
+        margin-bottom: 20px !important;
+    }
+    
+    .day-header {
+        padding: 12px !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+        align-items: flex-start !important;
+    }
+    
+    .day-header h5 {
+        font-size: 15px !important;
+        margin: 0 !important;
+    }
+    
+    .recommended-badge,
+    .day-score {
+        font-size: 11px !important;
+        padding: 4px 8px !important;
+    }
+    
+    .day-slots {
+        padding: 12px !important;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+    
+    .time-slot-suggestion {
+        padding: 12px !important;
+    }
+    
+    .slot-info {
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+        justify-content: flex-start !important;
+    }
+    
+    .slot-info span {
+        font-size: 11px !important;
+        padding: 3px 6px !important;
+    }
+}
+
+/* ===========================================================================
+   4. ENHANCED LOADING STATES - MOBILE
+   =========================================================================== */
+
+/**
+ * Primary Loading Container
+ * - Centered, clear messaging
+ * - Accessible and visible on mobile
+ */
+@media (max-width: 768px) {
+    #smart-loading,
+    .loading-container,
+    #lookup-status .loading {
+        min-height: 200px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 40px 20px !important;
+        text-align: center !important;
+    }
+    
+    .loading {
+        width: 100% !important;
+    }
+    
+    .loading-icon {
+        font-size: 48px !important;
+        margin-bottom: 16px !important;
+        animation: pulse-mobile 2s infinite !important;
+    }
+    
+    .loading p {
+        font-size: 15px !important;
+        color: #374151 !important;
+        margin: 12px 0 !important;
+        font-weight: 600 !important;
+    }
+}
+
+/**
+ * Loading Progress Bar - Mobile Enhanced
+ * - Wider for better visibility
+ * - Smooth animation
+ */
+@media (max-width: 768px) {
+    .loading-progress {
+        width: 100% !important;
+        max-width: 280px !important;
+        height: 6px !important;
+        border-radius: 3px !important;
+        margin: 20px auto !important;
+    }
+    
+    .progress-bar {
+        height: 100% !important;
+        border-radius: 3px !important;
+    }
+}
+
+/**
+ * Button Loading States - Mobile
+ * - Clear visual feedback
+ * - Prevents double-taps
+ */
+@media (max-width: 768px) {
+    .btn.loading,
+    .btn[disabled],
+    .btn:disabled {
+        opacity: 0.6 !important;
+        cursor: not-allowed !important;
+        pointer-events: none !important;
+        position: relative !important;
+    }
+    
+    .btn.loading::after {
+        content: '' !important;
+        position: absolute !important;
+        width: 16px !important;
+        height: 16px !important;
+        top: 50% !important;
+        right: 16px !important;
+        margin-top: -8px !important;
+        border: 2px solid currentColor !important;
+        border-right-color: transparent !important;
+        border-radius: 50% !important;
+        animation: button-spin 0.6s linear infinite !important;
+    }
+}
+
+/**
+ * Inline Loading Messages - Mobile
+ * - Compact, clear status messages
+ * - Good contrast and visibility
+ */
+@media (max-width: 768px) {
+    .loading-message,
+    .status-message {
+        padding: 12px 16px !important;
+        margin: 12px 0 !important;
+        border-radius: 6px !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+    }
+    
+    .loading-message {
+        background: #eff6ff !important;
+        border: 1px solid #3b82f6 !important;
+        color: #1e3a8a !important;
+    }
+    
+    .status-message.success {
+        background: #f0fdf4 !important;
+        border: 1px solid #22c55e !important;
+        color: #166534 !important;
+    }
+    
+    .status-message.error {
+        background: #fef2f2 !important;
+        border: 1px solid #ef4444 !important;
+        color: #991b1b !important;
+    }
+}
+
+/**
+ * AJAX Overlay - Mobile
+ * - Full-screen overlay during AJAX operations
+ * - Prevents interaction during loading
+ */
+@media (max-width: 768px) {
+    .ajax-overlay {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        background: rgba(255, 255, 255, 0.9) !important;
+        z-index: 9998 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        backdrop-filter: blur(4px) !important;
+        -webkit-backdrop-filter: blur(4px) !important;
+    }
+    
+    .ajax-overlay .loading-content {
+        background: white !important;
+        padding: 32px 24px !important;
+        border-radius: 12px !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+        max-width: 320px !important;
+        width: 90% !important;
+    }
+}
+
+/* ===========================================================================
+   5. STRIPE PAYMENT ELEMENT - MOBILE VERIFICATION
+   =========================================================================== */
+
+/**
+ * Payment Container - Mobile Optimization
+ * - Ensures Stripe element is properly sized
+ * - Touch-friendly input fields
+ */
+@media (max-width: 768px) {
+    #payment-element {
+        padding: 16px 0 !important;
+        min-height: 200px !important;
+    }
+    
+    /* Override Stripe's default styles for mobile */
+    #payment-element iframe {
+        min-height: 200px !important;
+    }
+    
+    .payment-container,
+    .payment-section {
+        padding: 16px !important;
+        margin-bottom: 20px !important;
+    }
+}
+
+/**
+ * Payment Buttons - Mobile
+ * - Large, easy to tap
+ * - Clear loading states
+ */
+@media (max-width: 768px) {
+    #btn-complete-booking,
+    .btn-payment {
+        min-height: 52px !important;
+        width: 100% !important;
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        padding: 16px 24px !important;
+        margin-top: 20px !important;
+        touch-action: manipulation !important;
+        -webkit-tap-highlight-color: transparent !important;
+    }
+    
+    #btn-complete-booking:active {
+        transform: scale(0.98) !important;
+    }
+}
+
+/**
+ * Payment Summary - Mobile
+ * - Clear, readable summary
+ * - Good visual hierarchy
+ */
+@media (max-width: 768px) {
+    #booking-summary-details,
+    .payment-summary {
+        background: #f9fafb !important;
+        padding: 16px !important;
+        border-radius: 8px !important;
+        margin-bottom: 20px !important;
+    }
+    
+    .summary-row {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 10px 0 !important;
+        border-bottom: 1px solid #e5e7eb !important;
+        font-size: 14px !important;
+    }
+    
+    .summary-row:last-child {
+        border-bottom: none !important;
+        padding-top: 16px !important;
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        color: #1e3a8a !important;
+    }
+}
+
+/**
+ * Payment Error Messages - Mobile
+ * - Prominent, clear error display
+ * - Easy to read and understand
+ */
+@media (max-width: 768px) {
+    .payment-error,
+    #card-errors {
+        background: #fef2f2 !important;
+        border: 2px solid #ef4444 !important;
+        border-radius: 8px !important;
+        padding: 14px 16px !important;
+        margin: 16px 0 !important;
+        color: #991b1b !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        line-height: 1.5 !important;
+    }
+    
+    .payment-error::before {
+        content: 'âš ï¸ ' !important;
+        margin-right: 6px !important;
+    }
+}
+
+/* ===========================================================================
+   6. NO SLOTS / ERROR STATES - MOBILE
+   =========================================================================== */
+
+/**
+ * Empty State Messages - Mobile
+ * - Clear, friendly messaging
+ * - Good visual design
+ */
+@media (max-width: 768px) {
+    .no-slots-message,
+    .empty-state {
+        padding: 32px 20px !important;
+        text-align: center !important;
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+        color: #6b7280 !important;
+        background: #f9fafb !important;
+        border-radius: 8px !important;
+        margin: 20px 0 !important;
+    }
+    
+    .no-slots-message::before,
+    .empty-state::before {
+        content: '📅' !important;
+        display: block !important;
+        font-size: 48px !important;
+        margin-bottom: 16px !important;
+    }
+}
+
+/* ===========================================================================
+   7. ANIMATIONS & INTERACTIONS - MOBILE OPTIMIZED
+   =========================================================================== */
+
+/**
+ * Mobile-Specific Animations
+ * - Smooth, performant animations
+ * - Hardware accelerated where possible
+ */
+@keyframes pulse-mobile {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+@keyframes button-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes slide-up {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/**
+ * Apply Animations to New Content
+ */
+@media (max-width: 768px) {
+    .time-slot {
+        animation: slide-up 0.3s ease-out !important;
+    }
+    
+    .time-slot:nth-child(1) { animation-delay: 0s !important; }
+    .time-slot:nth-child(2) { animation-delay: 0.05s !important; }
+    .time-slot:nth-child(3) { animation-delay: 0.1s !important; }
+    .time-slot:nth-child(4) { animation-delay: 0.15s !important; }
+    .time-slot:nth-child(5) { animation-delay: 0.2s !important; }
+    .time-slot:nth-child(6) { animation-delay: 0.25s !important; }
+    
+    #smart-suggestions-container {
+        animation: fade-in 0.4s ease-out !important;
+    }
+}
+
+/**
+ * Reduce Motion Support - Accessibility
+ */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    .time-slot {
+        animation: none !important;
+    }
+}
+
+/* ===========================================================================
+   8. MOBILE LANDSCAPE ADJUSTMENTS
+   =========================================================================== */
+
+/**
+ * Landscape Mode - Optimized Layout
+ * - Better use of horizontal space
+ * - Maintains touch targets
+ */
+@media (max-width: 768px) and (orientation: landscape) {
+    .calendar-popup {
+        max-width: 440px !important;
+    }
+    
+    .time-slots-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+    
+    .day-slots {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+/* ===========================================================================
+   9. ACCESSIBILITY ENHANCEMENTS - MOBILE
+   =========================================================================== */
+
+/**
+ * Focus States - Clear and Visible
+ * - Enhanced for mobile/touch
+ */
+@media (max-width: 768px) {
+    .bms-smart-scheduler-widget button:focus-visible,
+    .bms-smart-scheduler-widget input:focus-visible,
+    .bms-smart-scheduler-widget select:focus-visible {
+        outline: 3px solid #3b82f6 !important;
+        outline-offset: 2px !important;
+    }
+    
+    .cal-day:focus-visible {
+        outline: 2px solid #3b82f6 !important;
+        outline-offset: 1px !important;
+    }
+    
+    .time-slot:focus-visible {
+        outline: 3px solid #3b82f6 !important;
+        outline-offset: 2px !important;
+    }
+}
+
+/**
+ * High Contrast Mode Support
+ */
+@media (prefers-contrast: high) and (max-width: 768px) {
+    .bms-smart-scheduler-widget,
+    .calendar-popup,
+    .time-slot {
+        border-width: 3px !important;
+    }
+    
+    .btn {
+        border: 3px solid currentColor !important;
+    }
+}
+
+/* ===========================================================================
+   10. PRINT STYLES - HIDE INTERACTIVE ELEMENTS
+   =========================================================================== */
+
+/**
+ * Print Optimization
+ * - Hide calendar and interactive elements when printing
+ */
+@media print {
+    .calendar-popup,
+    #smart-loading,
+    .ajax-overlay,
+    .btn,
+    .calendar-icon {
+        display: none !important;
+    }
+    
+    .bms-smart-scheduler-widget {
+        box-shadow: none !important;
+        border: 1px solid #000 !important;
+    }
+}
+
+/* ===========================================================================
+   END PHASE 2 MOBILE ENHANCEMENTS
+   =========================================================================== */
+
+/**
+ * COMPATIBILITY NOTES:
+ * - All styles use !important to ensure they override existing styles
+ * - No existing class names or IDs are modified
+ * - All styles are additive and scoped to mobile breakpoints
+ * - Tested on iOS Safari, Chrome Mobile, Samsung Internet
+ * 
+ * BROWSER SUPPORT:
+ * - iOS Safari 12+
+ * - Chrome Mobile (Android)
+ * - Samsung Internet
+ * - Firefox Mobile
+ * - Edge Mobile
+ */

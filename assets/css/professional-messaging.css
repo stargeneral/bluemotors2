@@ -1,0 +1,125 @@
+/**
+ * Professional Messaging CSS
+ * 
+ * Styles for professional automotive service messaging
+ */
+
+/* Professional messaging containers */
+.professional-messaging {
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin: 15px 0;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.professional-messaging h2,
+.professional-messaging h3,
+.professional-messaging h4 {
+    color: white !important;
+    margin: 10px 0;
+}
+
+.professional-messaging p {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+/* Competitive advantage messaging */
+.competitive-advantage {
+    background: #f0f8ff;
+    border: 2px solid #1d4ed8;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 15px 0;
+}
+
+.competitive-advantage h3 {
+    color: #1e40af;
+    margin-bottom: 15px;
+}
+
+.competitive-advantage ul {
+    list-style: none;
+    padding: 0;
+}
+
+.competitive-advantage li {
+    padding: 8px 0;
+    position: relative;
+    padding-left: 30px;
+}
+
+.competitive-advantage li:before {
+    content: "✅";
+    position: absolute;
+    left: 0;
+    top: 8px;
+}
+
+/* Service quality indicators */
+.service-quality {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+.service-quality .indicator {
+    text-align: center;
+    flex: 1;
+}
+
+.service-quality .indicator .number {
+    font-size: 2em;
+    font-weight: bold;
+    color: #1e40af;
+}
+
+.service-quality .indicator .label {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+/* Professional badges */
+.professional-badge {
+    display: inline-block;
+    background: #059669;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 5px;
+}
+
+.professional-badge.premium {
+    background: #7c3aed;
+}
+
+.professional-badge.quality {
+    background: #dc2626;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .professional-messaging {
+        padding: 15px;
+        margin: 10px 0;
+    }
+    
+    .service-quality {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .competitive-advantage {
+        padding: 15px;
+    }
+}

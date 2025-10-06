@@ -1,0 +1,1140 @@
+/**
+ * Blue Motors Southampton - Tyre Booking JavaScript
+ * Phase 2: Tyre Services Implementation
+ * 
+ * This provides the complete online tyre ordering system with convenient booking.
+ */
+
+class BlueMotosTyreBooking {
+    constructor() {
+        this.selectedTyre = null;
+        this.selectedQuantity = 1;
+        this.availableTyres = [];
+        this.vehicleData = null;
+        this.currentStep = 'search';
+        
+        this.init();
+    }
+    
+    init() {
+        this.bindEvents();
+        this.setupDateLimits();
+        this.initCalendar();
+        console.log('🛞 Blue Motors Tyre System Initialized');
+    }
+    
+    bindEvents() {
+        // Search method switching
+        document.querySelectorAll('[data-method]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                this.switchSearchMethod(e.target.dataset.method);
+            });
+        });
+        
+        // Registration search
+        const regButton = document.getElementById('btn-search-tyres-by-reg');
+        if (regButton) {
+            regButton.addEventListener('click', () => this.searchByRegistration());
+        }
+        
+        const regInput = document.getElementById('bms-vehicle-reg');
+        if (regInput) {
+            regInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    this.searchByRegistration();
+                }
+            });
+            
+            regInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            });
+        }
+        
+        // Size search
+        const sizeButton = document.getElementById('btn-search-tyres-by-size');
+        if (sizeButton) {
+            sizeButton.addEventListener('click', () => this.searchBySize());
+        }
+        
+        // Popular size buttons
+        document.querySelectorAll('.size-button').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                this.searchByPopularSize(e.target.dataset.size);
+            });
+        });
+        
+        // Filter changes
+        document.getElementById('filter-brand-tier')?.addEventListener('change', () => this.applyFilters());
+        document.getElementById('filter-sort')?.addEventListener('change', () => this.applyFilters());
+        document.getElementById('filter-season')?.addEventListener('change', () => this.applyFilters());
+        
+        // Fitting appointment
+        document.getElementById('fitting-date')?.addEventListener('change', (e) => {
+            this.loadFittingSlots(e.target.value);
+        });
+        
+        document.getElementById('btn-continue-to-booking')?.addEventListener('click', () => {
+            this.showFittingAppointment();
+        });
+        
+        document.getElementById('btn-confirm-booking')?.addEventListener('click', () => {
+            this.confirmBooking();
+        });
+        
+        document.getElementById('btn-back-to-selection')?.addEventListener('click', () => {
+            this.backToSelection();
+        });
+    }
+    
+    setupDateLimits() {
+        // Set date limits for calendar functionality (matching working smart scheduler)
+        this.today = new Date();
+        this.today.setHours(0, 0, 0, 0); // Reset to start of day for proper comparison
+        this.minDate = new Date(this.today.getTime() + (1 * 24 * 60 * 60 * 1000)); // 1 day from now (tomorrow)
+        this.maxDate = new Date(this.today.getTime() + (30 * 24 * 60 * 60 * 1000)); // 30 days from now
+        this.selectedDate = null;
+    }
+    
+    initCalendar() {
+        // Enhanced calendar initialization with multiple fallback methods
+        const dateInput = document.getElementById('fitting-date');
+        const calendarIcon = document.querySelector('.calendar-icon');
+        
+        if (dateInput) {
+            console.log('📅 Initializing enhanced calendar system');
+            
+            // Make calendar icon clickable
+            if (calendarIcon) {
+                jQuery(calendarIcon).css('pointer-events', 'auto');
+            }
+            
+            // Method 1: Custom calendar popup (primary method)
+            jQuery(dateInput).on('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.showCalendar();
+            });
+            
+            if (calendarIcon) {
+                jQuery(calendarIcon).on('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.showCalendar();
+                });
+            }
+            
+            // Method 2: Try native date picker if custom calendar fails
+            if (!document.getElementById('fitting-calendar-popup')) {
+                console.warn('⚠️ Custom calendar popup not found, enabling native fallback');
+                dateInput.type = 'date';
+                
+                // Set native date limits
+                const minDateStr = this.minDate.toISOString().split('T')[0];
+                const maxDateStr = this.maxDate.toISOString().split('T')[0];
+                dateInput.min = minDateStr;
+                dateInput.max = maxDateStr;
+                
+                // Handle native date changes
+                jQuery(dateInput).on('change', (e) => {
+                    const selectedDate = new Date(e.target.value);
+                    if (selectedDate && !isNaN(selectedDate.getTime())) {
+                        this.handleNativeDateSelection(selectedDate);
+                    }
+                });
+            }
+            
+            // Ensure input is always accessible
+            jQuery(dateInput).css({
+                'cursor': 'pointer',
+                'pointer-events': 'auto'
+            }).removeAttr('readonly');
+        }
+        
+        // Close calendar when clicking outside
+        jQuery(document).on('click', (e) => {
+            if (!jQuery(e.target).closest('.date-picker-wrapper, #fitting-calendar-popup').length) {
+                jQuery('#fitting-calendar-popup').slideUp();
+            }
+        });
+        
+        // Delegate calendar navigation events
+        jQuery(document).on('click', '.cal-day:not(.disabled):not(.other-month)', (e) => {
+            this.selectCalendarDate(e.target);
+        });
+        
+        jQuery(document).on('click', '.cal-prev', (e) => {
+            e.preventDefault();
+            this.navigateCalendar(-1);
+        });
+        
+        jQuery(document).on('click', '.cal-next', (e) => {
+            e.preventDefault();
+            this.navigateCalendar(1);
+        });
+        
+        console.log('✅ Calendar system initialized');
+    }
+    
+    // Handle native date picker selection (fallback method)
+    handleNativeDateSelection(date) {
+        this.selectedDate = date;
+        
+        // Format date in UK format for display
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        const ukDate = day + '/' + month + '/' + year;
+        
+        const dateInput = document.getElementById('fitting-date');
+        if (dateInput) {
+            // Show formatted date as title
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const formattedDate = date.toLocaleDateString('en-GB', options);
+            dateInput.setAttribute('title', formattedDate);
+            
+            // Load fitting slots
+            const isoDate = date.toISOString().split('T')[0];
+            this.loadFittingSlots(isoDate);
+        }
+        
+        console.log('📅 Native date selected:', ukDate);
+    }
+    
+    showCalendar() {
+        const currentMonth = this.selectedDate ? this.selectedDate.getMonth() : this.today.getMonth();
+        const currentYear = this.selectedDate ? this.selectedDate.getFullYear() : this.today.getFullYear();
+        
+        jQuery('#fitting-calendar-popup').html(this.generateCalendar(currentYear, currentMonth)).slideDown();
+        console.log('📅 Calendar opened');
+    }
+    
+    hideCalendar() {
+        jQuery('#fitting-calendar-popup').slideUp();
+        console.log('📅 Calendar closed');
+    }
+    
+    generateCalendar(year, month) {
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const prevLastDay = new Date(year, month, 0);
+        const daysInMonth = lastDay.getDate();
+        const firstDayOfWeek = firstDay.getDay();
+        const daysInPrevMonth = prevLastDay.getDate();
+        
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                          'July', 'August', 'September', 'October', 'November', 'December'];
+        
+        let html = '<div class="calendar-header">';
+        html += '<button class="cal-nav cal-prev">&lt;</button>';
+        html += '<div class="cal-month-year">' + monthNames[month] + ' ' + year + '</div>';
+        html += '<button class="cal-nav cal-next">&gt;</button>';
+        html += '</div>';
+        
+        html += '<div class="calendar-days">';
+        html += '<div class="cal-day-header">Sun</div>';
+        html += '<div class="cal-day-header">Mon</div>';
+        html += '<div class="cal-day-header">Tue</div>';
+        html += '<div class="cal-day-header">Wed</div>';
+        html += '<div class="cal-day-header">Thu</div>';
+        html += '<div class="cal-day-header">Fri</div>';
+        html += '<div class="cal-day-header">Sat</div>';
+        
+        // Previous month days
+        for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+            html += '<div class="cal-day other-month">' + (daysInPrevMonth - i) + '</div>';
+        }
+        
+        // Current month days
+        for (let day = 1; day <= daysInMonth; day++) {
+            const date = new Date(year, month, day);
+            const isToday = date.toDateString() === this.today.toDateString();
+            const isPast = date < this.minDate; // Use minDate (tomorrow) as cutoff for selections
+            const isFuture = date > this.maxDate;
+            const isSelected = this.selectedDate && date.toDateString() === this.selectedDate.toDateString();
+            const isSunday = date.getDay() === 0;
+            
+            let classes = 'cal-day';
+            if (isToday) classes += ' today';
+            if (isPast || isFuture || isSunday) classes += ' disabled';
+            if (isSelected) classes += ' selected';
+            
+            html += '<div class="' + classes + '" data-date="' + date.toISOString() + '">' + day + '</div>';
+        }
+        
+        // Next month days
+        const remainingDays = 42 - (firstDayOfWeek + daysInMonth);
+        for (let day = 1; day <= remainingDays; day++) {
+            html += '<div class="cal-day other-month">' + day + '</div>';
+        }
+        
+        html += '</div>';
+        
+        return html;
+    }
+    
+    selectCalendarDate(dayElement) {
+        const date = new Date(dayElement.dataset.date);
+        this.selectedDate = date;
+        
+        // Format date in UK format
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        const ukDate = day + '/' + month + '/' + year;
+        
+        const dateInput = document.getElementById('fitting-date');
+        if (dateInput) {
+            dateInput.value = ukDate;
+            
+            // Show formatted date as title
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const formattedDate = date.toLocaleDateString('en-GB', options);
+            dateInput.setAttribute('title', formattedDate);
+            
+            // Load fitting slots for the selected date
+            const isoDate = date.toISOString().split('T')[0];
+            this.loadFittingSlots(isoDate);
+        }
+        
+        this.hideCalendar();
+    }
+    
+    navigateCalendar(direction) {
+        const currentContent = jQuery('#fitting-calendar-popup').html();
+        const monthYearMatch = currentContent.match(/class="cal-month-year">(\w+) (\d+)</);
+        if (monthYearMatch) {
+            const monthName = monthYearMatch[1];
+            const year = parseInt(monthYearMatch[2]);
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                              'July', 'August', 'September', 'October', 'November', 'December'];
+            const month = monthNames.indexOf(monthName);
+            
+            let newMonth = month + direction;
+            let newYear = year;
+            if (newMonth < 0) {
+                newMonth = 11;
+                newYear--;
+            } else if (newMonth > 11) {
+                newMonth = 0;
+                newYear++;
+            }
+            
+            jQuery('#fitting-calendar-popup').html(this.generateCalendar(newYear, newMonth));
+        }
+    }
+    
+    switchSearchMethod(method) {
+        document.querySelectorAll('.search-method').forEach(el => {
+            el.classList.remove('active');
+        });
+        
+        document.querySelector(`[data-method="${method}"]`).classList.add('active');
+        this.hideAllSections();
+    }
+    
+    async searchByRegistration() {
+        const regInput = document.getElementById('bms-vehicle-reg');
+        const registration = regInput.value.trim();
+        
+        if (!registration) {
+            this.showError('Please enter a vehicle registration number');
+            return;
+        }
+        
+        if (!this.validateUKRegistration(registration)) {
+            this.showError('Please enter a valid UK registration number');
+            return;
+        }
+        
+        this.showLoading('Looking up your vehicle and finding perfect tyres...');
+        
+        try {
+            const response = await fetch(bmsVehicleLookup.ajaxUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    action: 'bms_search_tyres_by_reg',
+                    nonce: bmsVehicleLookup.nonce,
+                    registration: registration
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                this.vehicleData = data.data.vehicle;
+                this.displayVehicleAndTyres(data.data);
+            } else {
+                this.showError(data.data || 'Vehicle not found. Please try searching by tyre size instead.');
+            }
+        } catch (error) {
+            console.error('Search error:', error);
+            this.showError('Network error. Please check your connection and try again.');
+        }
+    }
+    
+    async searchBySize() {
+        const width = document.getElementById('tyre-width').value;
+        const profile = document.getElementById('tyre-profile').value;
+        const rim = document.getElementById('tyre-rim').value;
+        
+        if (!width || !profile || !rim) {
+            this.showError('Please select all tyre size options');
+            return;
+        }
+        
+        const size = `${width}/${profile}R${rim}`;
+        await this.performSizeSearch(size);
+    }
+    
+    async searchByPopularSize(size) {
+        await this.performSizeSearch(size);
+    }
+    
+    async performSizeSearch(size) {
+        this.showLoading('Searching for tyres...');
+        
+        try {
+            const response = await fetch(bmsVehicleLookup.ajaxUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    action: 'bms_search_tyres_by_size',
+                    nonce: bmsVehicleLookup.nonce,
+                    size: size
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                this.availableTyres = data.data;
+                this.displayTyreResults(data.data, `Size: ${size}`);
+            } else {
+                this.showError(data.data || 'No tyres found for this size');
+            }
+        } catch (error) {
+            console.error('Search error:', error);
+            this.showError('Network error. Please try again.');
+        }
+    }
+    
+    displayVehicleAndTyres(data) {
+        if (!data.available_tyres || Object.keys(data.available_tyres).length === 0) {
+            this.showError('No tyres found for your vehicle. Please contact us for assistance.');
+            return;
+        }
+        
+        // Show vehicle information
+        const vehicleInfo = document.getElementById('vehicle-info-display');
+        const vehicleDetails = vehicleInfo.querySelector('.vehicle-details');
+        
+        vehicleDetails.innerHTML = `
+            <div class="vehicle-summary">
+                <h5>${data.vehicle.make} ${data.vehicle.model}</h5>
+                <p>Engine: ${data.vehicle.engineCapacity}cc ${data.vehicle.fuelType}</p>
+                <p>Year: ${data.vehicle.yearOfManufacture}</p>
+            </div>
+        `;
+        
+        vehicleInfo.style.display = 'block';
+        
+        // Combine all tyres from different sizes
+        this.availableTyres = [];
+        Object.keys(data.available_tyres).forEach(size => {
+            this.availableTyres = [...this.availableTyres, ...data.available_tyres[size]];
+        });
+        
+        this.displayTyreResults(this.availableTyres, 'Recommended for your vehicle');
+    }
+    
+    displayTyreResults(tyres, context) {
+        this.hideAllSections();
+        
+        if (!tyres || tyres.length === 0) {
+            this.showNoResults();
+            return;
+        }
+        
+        // Update results header
+        document.getElementById('results-title').textContent = `${tyres.length} Tyres Found`;
+        if (context) {
+            document.getElementById('results-title').textContent += ` - ${context}`;
+        }
+        document.getElementById('results-count-text').textContent = `${tyres.length} tyres available`;
+        
+        // Show filters
+        document.getElementById('tyre-filters').style.display = 'block';
+        
+        // Render tyre cards
+        this.renderTyreCards(tyres);
+        
+        // Show results section
+        document.getElementById('tyre-results').style.display = 'block';
+        
+        // Scroll to results
+        document.getElementById('tyre-results').scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+        });
+    }
+    
+    renderTyreCards(tyres) {
+        const grid = document.getElementById('tyre-results-grid');
+        grid.innerHTML = '';
+        
+        tyres.forEach(tyre => {
+            const card = this.createTyreCard(tyre);
+            grid.appendChild(card);
+        });
+    }
+    
+    createTyreCard(tyre) {
+        const template = document.getElementById('tyre-card-template');
+        const card = template.content.cloneNode(true);
+        
+        // Set tyre data
+        card.querySelector('.tyre-card').dataset.tyreId = tyre.id;
+        card.querySelector('.tyre-brand').textContent = tyre.brand;
+        card.querySelector('.tyre-model').textContent = tyre.model;
+        card.querySelector('.tyre-size').textContent = tyre.size;
+        card.querySelector('.speed-rating').textContent = tyre.speed_rating || 'N/A';
+        card.querySelector('.load-index').textContent = tyre.load_index || 'N/A';
+        
+        // Set tier styling
+        const tierElement = card.querySelector('.tyre-tier');
+        tierElement.textContent = tyre.brand_tier.replace('-', ' ').toUpperCase();
+        tierElement.classList.add(tyre.brand_tier);
+        
+        // Set EU ratings
+        card.querySelector('.fuel-rating').textContent = tyre.fuel_efficiency || 'N/A';
+        card.querySelector('.wet-rating').textContent = tyre.wet_grip || 'N/A';
+        card.querySelector('.noise-rating').textContent = tyre.noise_rating ? `${tyre.noise_rating}dB` : 'N/A';
+        
+        // Set pricing
+        card.querySelector('.tyre-price').textContent = `£${tyre.price.toFixed(2)}`;
+        card.querySelector('.fitting-cost').textContent = `£${tyre.fitting_price.toFixed(2)}`;
+        card.querySelector('.total-inc-vat').textContent = `£${tyre.total_per_tyre.toFixed(2)}`;
+        
+        // Bind events
+        const quantitySelect = card.querySelector('.tyre-quantity');
+        quantitySelect.addEventListener('change', (e) => {
+            this.updateTyreCardPricing(card, tyre, parseInt(e.target.value));
+        });
+        
+        const selectButton = card.querySelector('.btn-select-tyre');
+        selectButton.addEventListener('click', () => {
+            this.selectTyre(tyre, parseInt(quantitySelect.value));
+        });
+        
+        // Set initial pricing for 4 tyres
+        this.updateTyreCardPricing(card, tyre, 4);
+        
+        return card;
+    }
+    
+    updateTyreCardPricing(card, tyre, quantity) {
+        const total = tyre.total_per_tyre * quantity;
+        // Keep the button text simple and clean
+        card.querySelector('.btn-select-tyre').textContent = 'Select';
+    }
+    
+    async selectTyre(tyre, quantity) {
+        this.selectedTyre = tyre;
+        this.selectedQuantity = quantity;
+        
+        // Calculate pricing
+        try {
+            const response = await fetch(bmsVehicleLookup.ajaxUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    action: 'bms_calculate_tyre_price',
+                    nonce: bmsVehicleLookup.nonce,
+                    tyre_id: tyre.id,
+                    quantity: quantity
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                this.showTyreSelection(tyre, quantity, data.data);
+            } else {
+                this.showError('Failed to calculate pricing. Please try again.');
+            }
+        } catch (error) {
+            console.error('Pricing calculation error:', error);
+            this.showError('Network error. Please try again.');
+        }
+    }
+    
+    showTyreSelection(tyre, quantity, pricing) {
+        const selectionDiv = document.getElementById('tyre-selection');
+        const summaryDiv = selectionDiv.querySelector('.selection-summary');
+        
+        summaryDiv.innerHTML = `
+            <div class="selected-tyre-details">
+                <h5>${tyre.brand} ${tyre.model}</h5>
+                <p><strong>Size:</strong> ${tyre.size}</p>
+                <p><strong>Quantity:</strong> ${quantity} tyre${quantity > 1 ? 's' : ''}</p>
+                
+                <div class="price-breakdown">
+                    <div class="price-row">
+                        <span>Tyres (${quantity} × £${tyre.price.toFixed(2)}):</span>
+                        <span>£${pricing.tyre_cost.toFixed(2)}</span>
+                    </div>
+                    <div class="price-row">
+                        <span>Fitting (${quantity} × £${tyre.fitting_price.toFixed(2)}):</span>
+                        <span>£${pricing.fitting_cost.toFixed(2)}</span>
+                    </div>
+                    <div class="price-row">
+                        <span>VAT (20%):</span>
+                        <span>£${pricing.vat.toFixed(2)}</span>
+                    </div>
+                    <div class="price-row total-row">
+                        <span><strong>Total Price:</strong></span>
+                        <span><strong>£${pricing.total.toFixed(2)}</strong></span>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Store pricing data
+        this.pricingData = pricing;
+        
+        // Show selection section
+        this.hideAllSections();
+        selectionDiv.style.display = 'block';
+        
+        // Scroll to selection
+        selectionDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    
+    showFittingAppointment() {
+        this.hideAllSections();
+        document.getElementById('fitting-appointment').style.display = 'block';
+        
+        // Pre-fill vehicle registration if available
+        if (this.vehicleData && this.vehicleData.registrationNumber) {
+            // We'll need to add a hidden field or display this info
+        }
+        
+        // Focus on date field
+        document.getElementById('fitting-date').focus();
+    }
+    
+    async loadFittingSlots(date) {
+        const timeSelect = document.getElementById('fitting-time');
+        
+        if (!date) {
+            timeSelect.innerHTML = '<option value="">Select date first</option>';
+            return;
+        }
+        
+        timeSelect.innerHTML = '<option value="">Loading...</option>';
+        
+        try {
+            const response = await fetch(bmsVehicleLookup.ajaxUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    action: 'bms_get_fitting_slots',
+                    nonce: bmsVehicleLookup.nonce,
+                    date: date,
+                    quantity: this.selectedQuantity
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success && data.data.slots) {
+                timeSelect.innerHTML = '<option value="">Choose time</option>';
+                
+                data.data.slots.forEach(slot => {
+                    const option = document.createElement('option');
+                    option.value = slot;
+                    option.textContent = this.formatTime(slot);
+                    timeSelect.appendChild(option);
+                });
+                
+                if (data.data.slots.length === 0) {
+                    timeSelect.innerHTML = '<option value="">No slots available</option>';
+                }
+            } else {
+                timeSelect.innerHTML = '<option value="">Failed to load slots</option>';
+            }
+        } catch (error) {
+            console.error('Load slots error:', error);
+            timeSelect.innerHTML = '<option value="">Error loading slots</option>';
+        }
+    }
+    
+    async confirmBooking() {
+        // Collect form data
+        const formData = {
+            customer_name: document.getElementById('customer-name').value.trim(),
+            customer_email: document.getElementById('customer-email').value.trim(),
+            customer_phone: document.getElementById('customer-phone').value.trim(),
+            fitting_date: document.getElementById('fitting-date').value,
+            fitting_time: document.getElementById('fitting-time').value,
+            special_requirements: document.getElementById('special-requirements').value.trim()
+        };
+        
+        // Validation
+        if (!formData.customer_name || !formData.customer_email || !formData.customer_phone) {
+            this.showError('Please fill in all required fields');
+            return;
+        }
+        
+        if (!formData.fitting_date || !formData.fitting_time) {
+            this.showError('Please select appointment date and time');
+            return;
+        }
+        
+        if (!this.validateEmail(formData.customer_email)) {
+            this.showError('Please enter a valid email address');
+            return;
+        }
+        
+        // Add tyre and vehicle data
+        formData.tyre_id = this.selectedTyre.id;
+        formData.quantity = this.selectedQuantity;
+        formData.tyre_price = this.selectedTyre.price;
+        formData.fitting_price = this.selectedTyre.fitting_price;
+        formData.subtotal = this.pricingData.subtotal;
+        formData.vat_amount = this.pricingData.vat;
+        formData.total_price = this.pricingData.total;
+        
+        if (this.vehicleData) {
+            formData.vehicle_reg = this.vehicleData.registrationNumber;
+            formData.vehicle_make = this.vehicleData.make;
+            formData.vehicle_model = this.vehicleData.model;
+            formData.vehicle_year = this.vehicleData.yearOfManufacture;
+        } else {
+            formData.vehicle_reg = 'Manual Entry';
+            formData.vehicle_make = '';
+            formData.vehicle_model = '';
+            formData.vehicle_year = new Date().getFullYear();
+        }
+        
+        // Disable button and show loading
+        const confirmButton = document.getElementById('btn-confirm-booking');
+        const originalText = confirmButton.textContent;
+        confirmButton.disabled = true;
+        confirmButton.textContent = 'Creating Booking...';
+        
+        try {
+            const response = await fetch(bmsVehicleLookup.ajaxUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    action: 'bms_create_tyre_booking',
+                    nonce: bmsVehicleLookup.nonce,
+                    ...formData
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                this.showBookingSuccess(data.data, formData);
+            } else {
+                this.showError(data.data || 'Booking failed. Please try again.');
+                confirmButton.disabled = false;
+                confirmButton.textContent = originalText;
+            }
+        } catch (error) {
+            console.error('Booking error:', error);
+            this.showError('Network error. Please try again.');
+            confirmButton.disabled = false;
+            confirmButton.textContent = originalText;
+        }
+    }    
+    showBookingSuccess(bookingData, formData) {
+        this.hideAllSections();
+        
+        const successDiv = document.getElementById('booking-success');
+        const detailsDiv = successDiv.querySelector('.success-details');
+        
+        detailsDiv.innerHTML = `
+            <div class="booking-confirmation">
+                <h4>Booking Reference: ${bookingData.booking_reference}</h4>
+                <div class="confirmation-details">
+                    <p><strong>Appointment:</strong> ${this.formatDate(formData.fitting_date)} at ${this.formatTime(formData.fitting_time)}</p>
+                    <p><strong>Service:</strong> ${this.selectedQuantity} × ${this.selectedTyre.brand} ${this.selectedTyre.model} (${this.selectedTyre.size})</p>
+                    <p><strong>Total Paid:</strong> £${this.pricingData.total.toFixed(2)}</p>
+                    <p><strong>Customer:</strong> ${formData.customer_name}</p>
+                </div>
+                
+                <div class="next-steps-info">
+                    <h5>📧 What happens next:</h5>
+                    <ul>
+                        <li>✅ Confirmation email sent to ${formData.customer_email}</li>
+                        <li>✅ Calendar reminder 24 hours before</li>
+                        <li>✅ Please arrive 10 minutes early</li>
+                        <li>✅ Bring your vehicle registration document</li>
+                    </ul>
+                </div>
+                
+                <div class="contact-info">
+                    <h5>📍 Our Location:</h5>
+                    <p>Blue Motors Southampton<br>
+                    1 Kent St, Northam<br>
+                    Southampton SO14 5SP<br>
+                    Tel: 023 8000 0000</p>
+                </div>
+            </div>
+        `;
+        
+        successDiv.style.display = 'block';
+        successDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+        // Show booking confirmation
+        setTimeout(() => {
+            this.showBookingConfirmation();
+        }, 2000);
+    }
+    
+    showBookingConfirmation() {
+        // Show a brief confirmation message
+        const popup = document.createElement('div');
+        popup.className = 'booking-confirmation-popup';
+        popup.innerHTML = `
+            <div class="popup-content">
+                <div class="popup-icon">✅</div>
+                <h4>Booking Confirmed!</h4>
+                <p>Your tyre fitting appointment has been successfully booked.</p>
+                <button onclick="this.parentElement.parentElement.remove()" class="btn-primary btn-small">
+                    Great! 👍
+                </button>
+            </div>
+        `;
+        popup.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10000;
+            background: rgba(0,0,0,0.8);
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `;
+        popup.querySelector('.popup-content').style.cssText = `
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        `;
+        
+        document.body.appendChild(popup);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (popup.parentElement) {
+                popup.remove();
+            }
+        }, 5000);
+    }
+    
+    backToSelection() {
+        this.hideAllSections();
+        document.getElementById('tyre-selection').style.display = 'block';
+    }
+    
+    applyFilters() {
+        const brandTier = document.getElementById('filter-brand-tier').value;
+        const sort = document.getElementById('filter-sort').value;
+        const season = document.getElementById('filter-season').value;
+        
+        let filteredTyres = [...this.availableTyres];
+        
+        // Apply brand tier filter
+        if (brandTier) {
+            filteredTyres = filteredTyres.filter(tyre => tyre.brand_tier === brandTier);
+        }
+        
+        // Apply season filter
+        if (season) {
+            filteredTyres = filteredTyres.filter(tyre => tyre.season === season);
+        }
+        
+        // Apply sorting
+        this.sortTyres(filteredTyres, sort);
+        
+        // Re-render results
+        this.renderTyreCards(filteredTyres);
+        
+        // Update count
+        document.getElementById('results-count-text').textContent = `${filteredTyres.length} tyres available`;
+    }
+    
+    sortTyres(tyres, sortBy) {
+        switch(sortBy) {
+            case 'price ASC':
+                tyres.sort((a, b) => a.total_per_tyre - b.total_per_tyre);
+                break;
+            case 'price DESC':
+                tyres.sort((a, b) => b.total_per_tyre - a.total_per_tyre);
+                break;
+            case 'brand ASC':
+                tyres.sort((a, b) => a.brand.localeCompare(b.brand));
+                break;
+            case 'brand_tier ASC':
+                const tierOrder = { 'premium': 1, 'mid-range': 2, 'budget': 3 };
+                tyres.sort((a, b) => {
+                    const tierDiff = tierOrder[a.brand_tier] - tierOrder[b.brand_tier];
+                    return tierDiff !== 0 ? tierDiff : a.price - b.price;
+                });
+                break;
+        }
+    }
+    
+    // Utility methods
+    validateUKRegistration(reg) {
+        // Basic UK registration patterns
+        const patterns = [
+            /^[A-Z]{2}\d{2}\s?[A-Z]{3}$/,     // AB12 CDE
+            /^[A-Z]\d{1,3}\s?[A-Z]{3}$/,      // A123 BCD
+            /^[A-Z]{1,3}\d{1,4}$/             // ABC 1234
+        ];
+        
+        return patterns.some(pattern => pattern.test(reg.replace(/\s/g, '')));
+    }
+    
+    validateEmail(email) {
+        const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return pattern.test(email);
+    }
+    
+    formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-GB', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    }
+    
+    formatTime(timeString) {
+        const time = new Date(`2000-01-01 ${timeString}`);
+        return time.toLocaleTimeString('en-GB', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
+    }
+    
+    showLoading(message) {
+        this.hideAllSections();
+        
+        const loadingDiv = document.getElementById('tyre-loading');
+        loadingDiv.querySelector('.loading-text').textContent = message;
+        loadingDiv.style.display = 'block';
+    }
+    
+    showError(message) {
+        // Create or update error display
+        let errorDiv = document.getElementById('tyre-error');
+        
+        if (!errorDiv) {
+            errorDiv = document.createElement('div');
+            errorDiv.id = 'tyre-error';
+            errorDiv.className = 'tyre-error';
+            errorDiv.style.cssText = `
+                background: #fef2f2;
+                border: 2px solid #f87171;
+                border-radius: 8px;
+                padding: 20px;
+                margin: 20px 0;
+                text-align: center;
+            `;
+            
+            // Insert after search methods
+            const searchMethods = document.querySelector('.bms-search-methods');
+            searchMethods.parentNode.insertBefore(errorDiv, searchMethods.nextSibling);
+        }
+        
+        errorDiv.innerHTML = `
+            <div class="error-icon" style="font-size: 2rem; margin-bottom: 10px;">⚠️</div>
+            <h4 style="color: #dc2626; margin: 0 0 10px 0;">Search Error</h4>
+            <p style="color: #7f1d1d; margin: 0;">${message}</p>
+            <button onclick="this.parentElement.style.display='none'" 
+                    style="margin-top: 15px; padding: 8px 16px; background: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                Dismiss
+            </button>
+        `;
+        
+        errorDiv.style.display = 'block';
+        errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Auto-hide after 8 seconds
+        setTimeout(() => {
+            if (errorDiv && errorDiv.style.display !== 'none') {
+                errorDiv.style.display = 'none';
+            }
+        }, 8000);
+    }
+    
+    showNoResults() {
+        this.hideAllSections();
+        document.getElementById('no-results').style.display = 'block';
+    }
+    
+    hideAllSections() {
+        const sections = [
+            'vehicle-info-display',
+            'tyre-filters', 
+            'tyre-loading',
+            'tyre-results',
+            'no-results',
+            'tyre-selection',
+            'fitting-appointment',
+            'booking-success'
+        ];
+        
+        sections.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.style.display = 'none';
+            }
+        });
+        
+        // Also hide error if it exists
+        const errorDiv = document.getElementById('tyre-error');
+        if (errorDiv) {
+            errorDiv.style.display = 'none';
+        }
+    }
+    
+    // Public methods for external access
+    reset() {
+        this.selectedTyre = null;
+        this.selectedQuantity = 1;
+        this.availableTyres = [];
+        this.vehicleData = null;
+        this.currentStep = 'search';
+        
+        this.hideAllSections();
+        
+        // Clear form inputs
+        document.getElementById('bms-vehicle-reg').value = '';
+        document.getElementById('tyre-width').value = '';
+        document.getElementById('tyre-profile').value = '';
+        document.getElementById('tyre-rim').value = '';
+        
+        // Reset to registration search method
+        this.switchSearchMethod('registration');
+        
+        console.log('🔄 Tyre search reset');
+    }
+    
+    getSelectedTyreData() {
+        if (!this.selectedTyre) {
+            return null;
+        }
+        
+        return {
+            tyre: this.selectedTyre,
+            quantity: this.selectedQuantity,
+            pricing: this.pricingData,
+            vehicle: this.vehicleData
+        };
+    }
+}
+
+// Global utility functions
+function bmsResetSearch() {
+    if (window.bmsTyreBooking) {
+        window.bmsTyreBooking.reset();
+    }
+}
+
+function bmsShowServiceMessage() {
+    const message = document.createElement('div');
+    message.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+        z-index: 9999;
+        max-width: 300px;
+        animation: slideIn 0.5s ease-out;
+    `;
+    
+    message.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+            <span style="font-size: 1.5rem;">🛞</span>
+            <strong>Professional Service!</strong>
+        </div>
+        <p style="margin: 0; font-size: 14px;">
+            You just ordered tyres online with our convenient booking system!
+        </p>
+        <button onclick="this.parentElement.remove()" 
+                style="margin-top: 10px; padding: 5px 10px; background: rgba(255,255,255,0.2); 
+                       color: white; border: none; border-radius: 4px; cursor: pointer;">
+            ✓ Great
+        </button>
+    `;
+    
+    // Add animation CSS
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    document.body.appendChild(message);
+    
+    // Auto-remove after 6 seconds
+    setTimeout(() => {
+        if (message.parentElement) {
+            message.style.animation = 'slideIn 0.5s ease-out reverse';
+            setTimeout(() => message.remove(), 500);
+        }
+    }, 6000);
+}
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Only initialize if tyre search container exists
+    if (document.querySelector('.bms-tyre-search-container')) {
+        window.bmsTyreBooking = new BlueMotosTyreBooking();
+        
+        console.log('🚀 Blue Motors Tyre System Ready!');
+        console.log('🛞 Professional tyre ordering system initialized');
+        
+        // Show initial service message
+        setTimeout(() => {
+            bmsShowServiceMessage();
+        }, 1000);
+    }
+});
+
+// Export for module systems
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = BlueMotosTyreBooking;
+}

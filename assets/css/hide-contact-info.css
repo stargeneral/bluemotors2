@@ -1,0 +1,40 @@
+/**
+ * Hide Contact Information Box
+ * 
+ * This CSS file hides the Blue Motors Southampton contact information box
+ * that appears at the top of the booking form.
+ * 
+ * Created: October 4, 2025
+ */
+
+/* Hide the entire location header section */
+.bms-location-header {
+    display: none !important;
+}
+
+/* Alternative: If you want to keep the structure but hide visually */
+.bms-location-header.visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+/* Mobile-specific hiding (if needed) */
+@media (max-width: 768px) {
+    .bms-location-header {
+        display: none !important;
+    }
+}
+
+/* Desktop-specific hiding (if needed) */
+@media (min-width: 769px) {
+    .bms-location-header {
+        display: none !important;
+    }
+}

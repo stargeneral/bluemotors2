@@ -1,0 +1,34 @@
+{
+  "env": {
+    "WORDPRESS_ENV": "local",
+    "PLUGIN_SLUG": "blue-motors-southampton",
+    "COMPOSER_ALLOW_SUPERUSER": "1"
+  },
+  "permissions": {
+    "allow": [
+      "Read(./**/*.php)",
+      "Read(./**/*.js)",
+      "Read(./**/*.css)",
+      "Read(./**/*.md)",
+      "Read(./**/*.json)",
+      "Read(./**/*.html)",
+      "Write(./**/*.php)",
+      "Write(./**/*.js)",
+      "Write(./**/*.css)",
+      "Write(./**/*.md)",
+      "Write(./**/*.json)",
+      "Write(./**/*.html)",
+      "Bash(composer *)",
+      "Bash(wp *)",
+      "Bash(php *)",
+      "Bash(npm *)",
+      "Bash(git *)"
+    ],
+    "deny": [
+      "Write(./wp-config.php)",
+      "Write(./.env)",
+      "Bash(rm -rf *)",
+      "Bash(del *)"
+    ]
+  }
+}

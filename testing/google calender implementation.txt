@@ -1,0 +1,47 @@
+ Now I'll create a configuration guide for you to set up the service account properly:
+
+● Write(vendor\GOOGLE_CALENDAR_SETUP_GUIDE.md)
+  ⎿  Wrote 1 lines to vendor\GOOGLE_CALENDAR_SETUP_GUIDE.md
+     # Google Calendar Integration Setup Guide
+     ## Overview
+     Your WordPress plugin now has Google Calendar integration built-in. To complete the setup, you need to
+     configure the service account credentials.
+     ## Current Status
+     ✅ Google API Client installed
+     ✅ Calendar ID configured: `c_fr30nukqu17lfs90vlup6n73uc@group.calendar.google.com`
+     ✅ Service account email: `blue-motors-calendar-service@appointments-304621.iam.gserviceaccount.com`
+     ❌ **Missing: Service account private key and credentials**
+
+● Google Calendar Integration Complete!
+
+  I've successfully implemented Google Calendar integration for your WordPress plugin. Here's what's been done:
+
+  ✅ Implementation Complete:
+  - Google API client installed via Composer
+  - Google Calendar service class created at includes/services/class-google-calendar-service.php:21
+  - Updated booking integration at class-booking-integration.php:197 to check calendar availability
+  - Updated tyre service at class-tyre-service.php:180 to create calendar events
+  - Added setup and admin notices system
+
+  ✅ Features Implemented:
+  - Availability checking: Calendar events block time slots automatically
+  - Booking creation: All bookings create Google Calendar events with customer details
+  - Event management: Update/delete events when bookings change
+  - Tyre-specific integration: Special handling for tyre appointments with duration calculation
+  - Admin testing: Visit yoursite.com/wp-admin/?bms_calendar_test=1 to test connection
+
+  ❗ Next Step Required:
+  You need to provide the service account private key. The setup guide at vendor/GOOGLE_CALENDAR_SETUP_GUIDE.md
+  explains how to:
+
+  1. Get your service account JSON key file from Google Cloud Console
+  2. Either place it as vendor/service-account-credentials.json or update the code directly
+  3. Ensure the service account has access to your calendar
+
+  🔧 To Complete Setup:
+  1. Go to Google Cloud Console → IAM & Admin → Service Accounts
+  2. Find: blue-motors-calendar-service@appointments-304621.iam.gserviceaccount.com
+  3. Generate/download JSON key
+  4. Add service account to your calendar with "Make changes and manage sharing" permissions
+
+  Once you add the credentials, your bookings will automatically sync with Google Calendar!

@@ -1,0 +1,17 @@
+    // Phase 2: Mobile Enhancements - Smart Scheduler, Calendar & Loading States
+    wp_enqueue_style(
+        'bms-mobile-phase2-enhancements',
+        BMS_PLUGIN_URL . 'assets/css/mobile-phase2-enhancements.css',
+        array('bms-mobile-critical-fixes'),
+        BMS_VERSION . '.2', // Version bump for cache busting
+        'all'
+    );
+    
+    // Hide Contact Information Box (per user request October 4, 2025)
+    wp_enqueue_style(
+        'bms-hide-contact-info',
+        BMS_PLUGIN_URL . 'assets/css/hide-contact-info.css',
+        array('bms-mobile-phase2-enhancements'),
+        BMS_VERSION . '.3', // Version bump for cache busting
+        'all'
+    );

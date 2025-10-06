@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Date/Time Picker Test - Blue Motors Southampton</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f9fafb;
+        }
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #1f2937;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .status {
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        .status.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        .status.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+        .test-section {
+            margin-bottom: 32px;
+            padding: 20px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        .test-section h3 {
+            margin: 0 0 16px 0;
+            color: #374151;
+        }
+        #test-results {
+            margin-top: 20px;
+        }
+        .result-item {
+            padding: 8px 12px;
+            margin: 4px 0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .result-item.pass {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .result-item.fail {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        button {
+            background: #1d4ed8;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 8px 8px 8px 0;
+        }
+        button:hover {
+            background: #1e40af;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Mobile Date/Time Picker Test</h1>
+        
+        <div id="initial-status" class="status">
+            <strong>Loading test environment...</strong>
+        </div>
+        
+        <!-- Simulated Fitting Appointment Section -->
+        <div class="test-section">
+            <h3>Tyre Booking Date/Time Selection</h3>
+            <p>This simulates the tyre booking appointment selection with mobile-friendly popups.</p>
+            
+            <div class="fitting-appointment">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="fitting-date">📅 Preferred Date:</label>
+                        <input type="date" id="fitting-date" placeholder="Tap to select date" readonly />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="fitting-time">⏰ Available Times:</label>
+                        <input type="text" id="fitting-time" placeholder="Select date first" readonly />
+                    </div>
+                </div>
+            </div>
+            
+            <div id="selection-display" style="margin-top: 16px; padding: 12px; background: #f9fafb; border-radius: 6px; display: none;">
+                <strong>Selected:</strong>
+                <div id="selected-info"></div>
+            </div>
+        </div>
+        
+        <!-- Test Controls -->
+        <div class="test-section">
+            <h3>Test Controls</h3>
+            <button onclick="runTests()">🧪 Run All Tests</button>
+            <button onclick="testDatePicker()">📅 Test Date Picker</button>
+            <button onclick="testTimePicker()">⏰ Test Time Picker</button>
+            <button onclick="resetTest()">🔄 Reset</button>
+        </div>
+        
+        <div id="test-results"></div>
+        
+        <!-- Debug Information -->
+        <div class="test-section" style="font-size: 14px; color: #6b7280;">
+            <h3>Debug Information</h3>
+            <div id="debug-info">
+                <p><strong>User Agent:</strong> <span id="user-agent"></span></p>
+                <p><strong>Screen Size:</strong> <span id="screen-size"></span></p>
+                <p><strong>Touch Device:</strong> <span id="touch-device"></span></p>
+                <p><strong>Mobile Picker Loaded:</strong> <span id="picker-loaded">Checking...</span></p>
+                <p><strong>AJAX Endpoint:</strong> <span id="ajax-endpoint">N/A (Test Mode)</span></p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mock WordPress AJAX for testing -->
+    <script>
+        // Mock WordPress globals for testing
+        window.bmsTyreBooking = {
+            ajaxUrl: '/wp-admin/admin-ajax.php',
+            nonce: 'test-nonce-12345',
+            selectedQuantity: 2
+        };
+        
+        // Mock AJAX response for testing
+        window.fetch = async function(url, options) {
+            // Simulate loading delay
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Mock successful response with sample time slots
+            return {
+                json: async () => ({
+                    success: true,
+                    data: {
+                        slots: ['09:00', '10:30', '12:00', '14:00', '15:30', '17:00']
+                    }
+                })
+            };
+        };
+    </script>
+    
+    <!-- Load the mobile picker -->
+    <script src="../assets/js/mobile-date-time-picker.js"></script>
+    
+    <script>
+        // Initialize debug information
+        document.addEventListener('DOMContentLoaded', function() {
+            // Update debug info
+            document.getElementById('user-agent').textContent = navigator.userAgent;
+            document.getElementById('screen-size').textContent = `${window.screen.width}x${window.screen.height}`;
+            document.getElementById('touch-device').textContent = 'ontouchstart' in window ? 'Yes' : 'No';
+            
+            // Check if mobile picker loaded
+            setTimeout(() => {
+                const loaded = typeof window.MobileDateTimePicker !== 'undefined';
+                document.getElementById('picker-loaded').textContent = loaded ? 'Yes ✅' : 'No ❌';
+                
+                if (loaded) {
+                    document.getElementById('initial-status').className = 'status success';
+                    document.getElementById('initial-status').innerHTML = '<strong>✅ Test environment ready!</strong> Mobile date/time picker loaded successfully.';
+                } else {
+                    document.getElementById('initial-status').className = 'status error';
+                    document.getElementById('initial-status').innerHTML = '<strong>❌ Error:</strong> Mobile date/time picker failed to load.';
+                }
+            }, 1500);
+            
+            // Monitor selection changes
+            const dateInput = document.getElementById('fitting-date');
+            const timeInput = document.getElementById('fitting-time');
+            
+            function updateSelectionDisplay() {
+                const date = dateInput.value;
+                const time = timeInput.value;
+                const display = document.getElementById('selection-display');
+                const info = document.getElementById('selected-info');
+                
+                if (date || time) {
+                    display.style.display = 'block';
+                    info.innerHTML = `
+                        <div>Date: ${date || 'Not selected'}</div>
+                        <div>Time: ${time || 'Not selected'}</div>
+                    `;
+                } else {
+                    display.style.display = 'none';
+                }
+            }
+            
+            dateInput.addEventListener('change', updateSelectionDisplay);
+            timeInput.addEventListener('change', updateSelectionDisplay);
+        });
+        
+        // Test functions
+        function runTests() {
+            const results = document.getElementById('test-results');
+            results.innerHTML = '<h3>🧪 Test Results</h3>';
+            
+            const tests = [
+                {
+                    name: 'Mobile Picker Class Available',
+                    test: () => typeof window.MobileDateTimePicker !== 'undefined'
+                },
+                {
+                    name: 'Date Input Present',
+                    test: () => document.getElementById('fitting-date') !== null
+                },
+                {
+                    name: 'Time Input Present', 
+                    test: () => document.getElementById('fitting-time') !== null
+                },
+                {
+                    name: 'Inputs are Readonly',
+                    test: () => {
+                        const dateInput = document.getElementById('fitting-date');
+                        const timeInput = document.getElementById('fitting-time');
+                        return dateInput.hasAttribute('readonly') && timeInput.hasAttribute('readonly');
+                    }
+                },
+                {
+                    name: 'Touch Optimized for Mobile',
+                    test: () => {
+                        const dateInput = document.getElementById('fitting-date');
+                        const computedStyle = window.getComputedStyle(dateInput);
+                        const minHeight = parseInt(computedStyle.minHeight);
+                        return minHeight >= 48; // Minimum touch target size
+                    }
+                },
+                {
+                    name: 'Mock AJAX Function Available',
+                    test: () => typeof window.fetch === 'function'
+                }
+            ];
+            
+            tests.forEach(test => {
+                const passed = test.test();
+                const resultDiv = document.createElement('div');
+                resultDiv.className = `result-item ${passed ? 'pass' : 'fail'}`;
+                resultDiv.textContent = `${passed ? '✅' : '❌'} ${test.name}`;
+                results.appendChild(resultDiv);
+            });
+        }
+        
+        function testDatePicker() {
+            alert('📅 Click the date input field to test the mobile-friendly date picker popup!');
+        }
+        
+        function testTimePicker() {
+            const dateInput = document.getElementById('fitting-date');
+            if (!dateInput.value) {
+                alert('⚠️ Please select a date first, then test the time picker!');
+            } else {
+                alert('⏰ Click the time input field to test the mobile-friendly time picker popup!');
+            }
+        }
+        
+        function resetTest() {
+            document.getElementById('fitting-date').value = '';
+            document.getElementById('fitting-time').value = '';
+            document.getElementById('selection-display').style.display = 'none';
+            document.getElementById('test-results').innerHTML = '';
+            
+            if (window.mobileDateTimePicker) {
+                window.mobileDateTimePicker.reset();
+            }
+            
+            alert('🔄 Test environment reset!');
+        }
+    </script>
+</body>
+</html>

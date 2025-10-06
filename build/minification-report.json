@@ -1,0 +1,83 @@
+{
+    "timestamp": "2025-08-13 10:19:12",
+    "total_original_kb": 189.9,
+    "total_minified_kb": 116.3,
+    "total_savings_percent": 38.8,
+    "files_processed": 12,
+    "css_files": [
+        {
+            "file": "public.css",
+            "original": 6553,
+            "minified": 4649,
+            "savings": 29.1
+        },
+        {
+            "file": "mobile-enhancements.css",
+            "original": 16961,
+            "minified": 9707,
+            "savings": 42.8
+        },
+        {
+            "file": "uk-date-styles.css",
+            "original": 6196,
+            "minified": 4064,
+            "savings": 34.4
+        },
+        {
+            "file": "competitive-messaging.css",
+            "original": 12747,
+            "minified": 8743,
+            "savings": 31.4
+        },
+        {
+            "file": "vehicle-lookup.css",
+            "original": 15507,
+            "minified": 9945,
+            "savings": 35.9
+        },
+        {
+            "file": "tyre-search.css",
+            "original": 15205,
+            "minified": 9486,
+            "savings": 37.6
+        }
+    ],
+    "js_files": [
+        {
+            "file": "booking.js",
+            "original": 17283,
+            "minified": 9683,
+            "savings": 44
+        },
+        {
+            "file": "tyre-booking.js",
+            "original": 33934,
+            "minified": 21854,
+            "savings": 35.6
+        },
+        {
+            "file": "payment-improvements.js",
+            "original": 12263,
+            "minified": 7433,
+            "savings": 39.4
+        },
+        {
+            "file": "uk-date-handler.js",
+            "original": 11271,
+            "minified": 6925,
+            "savings": 38.6
+        },
+        {
+            "file": "competitive-messaging.js",
+            "original": 18945,
+            "minified": 11948,
+            "savings": 36.9
+        },
+        {
+            "file": "vehicle-lookup.js",
+            "original": 27621,
+            "minified": 14659,
+            "savings": 46.9
+        }
+    ]
+}

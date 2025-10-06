@@ -1,0 +1,326 @@
+/**
+ * Basic Shortcode Styling
+ * Blue Motors Southampton Plugin
+ * 
+ * Provides basic styling for all shortcodes to ensure they display properly
+ */
+
+/* General Shortcode Containers */
+.bms-shortcode-container, 
+.bms-enhanced-services-container,
+.bms-service-cards,
+.bms-service-list,
+.bms-tyre-search,
+.bms-smart-scheduler,
+.bms-location-info,
+.bms-contact-form {
+    margin: 20px 0;
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Service Cards */
+.bms-service-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.service-card {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.service-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.service-icon {
+    font-size: 2.5em;
+    margin-bottom: 15px;
+}
+
+.service-card h4 {
+    margin: 10px 0;
+    color: #333;
+    font-size: 1.25em;
+}
+
+.service-price {
+    font-weight: bold;
+    color: #007cba;
+    font-size: 1.1em;
+    margin: 10px 0;
+}
+
+.service-description {
+    color: #666;
+    font-size: 0.95em;
+    line-height: 1.4;
+    margin-bottom: 15px;
+}
+
+/* Buttons */
+.btn-book-service,
+.btn-search-tyres,
+.btn-check-availability,
+.btn-send-message,
+.btn-select-service {
+    background: #007cba;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.btn-book-service:hover,
+.btn-search-tyres:hover,
+.btn-check-availability:hover,
+.btn-send-message:hover {
+    background: #005a87;
+}
+
+/* Competitive Messaging */
+.competitive-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.advantage-message h3 {
+    margin: 0 0 15px 0;
+    font-size: 1.3em;
+}
+
+.advantages-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.advantage-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 5px;
+}
+
+.advantage-icon {
+    margin-right: 10px;
+    font-size: 1.2em;
+}
+
+.advantage-text {
+    font-size: 0.95em;
+}
+
+/* Forms */
+.tyre-search-form,
+.contact-form,
+.scheduler-container {
+    max-width: 600px;
+}
+
+.form-row {
+    margin: 15px 0;
+}
+
+.form-row label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #333;
+}
+
+.form-row input,
+.form-row select,
+.form-row textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.form-row input:focus,
+.form-row select:focus,
+.form-row textarea:focus {
+    outline: none;
+    border-color: #007cba;
+    box-shadow: 0 0 0 2px rgba(0, 124, 186, 0.2);
+}
+
+/* Service List */
+.service-list {
+    list-style: none;
+    padding: 0;
+}
+
+.service-item {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.service-item:last-child {
+    border-bottom: none;
+}
+
+.service-item strong {
+    color: #333;
+    font-size: 1.1em;
+}
+
+.service-price {
+    color: #007cba;
+    font-weight: bold;
+    margin-left: 15px;
+}
+
+/* Time Slots */
+.time-slot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.time-slot {
+    padding: 10px;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.time-slot:hover {
+    background: #007cba;
+    color: white;
+}
+
+.time-slot.selected {
+    background: #007cba;
+    color: white;
+    border-color: #005a87;
+}
+
+/* Opening Hours Table */
+.opening-hours-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.opening-hours-table th,
+.opening-hours-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.opening-hours-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+}
+
+.opening-hours-table tr.today {
+    background-color: #e3f2fd;
+    font-weight: 500;
+}
+
+/* Location Info */
+.location-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.location-details h4 {
+    color: #333;
+    margin: 0 0 10px 0;
+    font-size: 1.1em;
+}
+
+.location-details p,
+.location-details ul {
+    color: #666;
+    line-height: 1.5;
+}
+
+.location-details ul {
+    padding-left: 0;
+    list-style: none;
+}
+
+.location-details li {
+    margin: 5px 0;
+}
+
+/* Error Messages */
+.bms-error {
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 15px;
+    border: 1px solid #fecaca;
+    border-radius: 5px;
+    margin: 15px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .bms-service-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .advantages-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .location-details {
+        grid-template-columns: 1fr;
+    }
+    
+    .time-slot-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .bms-shortcode-container,
+    .bms-enhanced-services-container {
+        margin: 10px 0;
+        padding: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .service-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .service-price {
+        margin-left: 0;
+        margin-top: 5px;
+    }
+}

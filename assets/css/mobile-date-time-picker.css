@@ -1,0 +1,375 @@
+/**
+ * Mobile Date/Time Picker Enhancements
+ * Blue Motors Southampton - Mobile-First UX
+ */
+
+/* Enhanced Form Styling for Mobile */
+.fitting-appointment .form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.fitting-appointment .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.fitting-appointment .form-group label {
+    font-weight: 600;
+    color: #374151;
+    font-size: 14px;
+}
+
+/* Mobile-optimized input styling */
+.fitting-appointment input[type="date"],
+.fitting-appointment input[type="text"],
+.fitting-appointment select {
+    -webkit-appearance: none;
+    appearance: none;
+    background: #f9fafb;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 16px;
+    font-size: 16px; /* Prevents zoom on iOS */
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    min-height: 52px;
+}
+
+.fitting-appointment input[readonly] {
+    position: relative;
+    background: #f9fafb !important;
+    cursor: pointer !important;
+}
+
+.fitting-appointment input[readonly]:after {
+    content: '📅';
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+/* Touch-friendly tap targets */
+.fitting-appointment input,
+.fitting-appointment select,
+.fitting-appointment button {
+    min-height: 48px; /* Apple's recommended minimum tap target */
+}
+
+/* Appointment Summary Enhancement */
+.appointment-summary {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.appointment-summary h5 {
+    color: #15803d;
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+#appointment-summary-content {
+    display: grid;
+    gap: 8px;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #d1fae5;
+}
+
+.summary-item:last-child {
+    border-bottom: none;
+    font-weight: 600;
+    color: #15803d;
+}
+
+/* Action Buttons */
+.booking-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.booking-actions button {
+    padding: 16px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 52px;
+}
+
+#btn-confirm-booking {
+    background: #1d4ed8;
+    color: white;
+    box-shadow: 0 4px 12px rgba(29, 78, 216, 0.3);
+}
+
+#btn-confirm-booking:hover:not(:disabled) {
+    background: #1e40af;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(29, 78, 216, 0.4);
+}
+
+#btn-confirm-booking:disabled {
+    background: #d1d5db;
+    color: #9ca3af;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+#btn-back-to-selection {
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+}
+
+#btn-back-to-selection:hover {
+    background: #e5e7eb;
+    transform: translateY(-1px);
+}
+
+/* Success States */
+.form-group.success input {
+    border-color: #10b981 !important;
+    background: #ecfdf5 !important;
+}
+
+.form-group.success label::after {
+    content: ' ✓';
+    color: #10b981;
+}
+
+/* Error States */
+.form-group.error input {
+    border-color: #ef4444 !important;
+    background: #fef2f2 !important;
+}
+
+.form-group.error label {
+    color: #dc2626 !important;
+}
+
+.error-message {
+    color: #dc2626;
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+/* Loading States */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}
+
+.loading-spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid #e5e7eb;
+    border-top: 3px solid #1d4ed8;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Mobile Responsive Design */
+@media (max-width: 768px) {
+    .fitting-appointment {
+        padding: 20px 16px;
+    }
+    
+    .fitting-appointment .form-row {
+        gap: 20px;
+    }
+    
+    .fitting-appointment h4 {
+        font-size: 20px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    
+    /* Stack form elements on mobile */
+    .appointment-form .form-row {
+        flex-direction: column;
+    }
+    
+    /* Larger touch targets on mobile */
+    .fitting-appointment input,
+    .fitting-appointment select,
+    .fitting-appointment button {
+        min-height: 54px;
+        font-size: 16px;
+    }
+    
+    /* Action buttons full width on mobile */
+    .booking-actions {
+        position: sticky;
+        bottom: 0;
+        background: white;
+        padding: 16px;
+        margin: 20px -16px 0;
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 16px 16px 0 0;
+    }
+    
+    .booking-actions button {
+        width: 100%;
+        padding: 18px 24px;
+        font-size: 18px;
+    }
+}
+
+/* iPhone specific adjustments */
+@media (max-width: 480px) {
+    .fitting-appointment {
+        padding: 16px 12px;
+    }
+    
+    .appointment-summary {
+        padding: 16px;
+        margin: 16px 0;
+    }
+    
+    .booking-actions {
+        margin: 16px -12px 0;
+        padding: 12px;
+    }
+    
+    /* Prevent zoom on input focus for iOS */
+    .fitting-appointment input,
+    .fitting-appointment select,
+    .fitting-appointment textarea {
+        font-size: 16px !important;
+    }
+}
+
+/* Landscape mobile adjustments */
+@media (max-width: 768px) and (orientation: landscape) {
+    .mobile-date-popup .popup-content,
+    .mobile-time-popup .popup-content {
+        max-height: 85vh;
+    }
+    
+    .calendar-container,
+    .time-selection-container {
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .mobile-date-popup .popup-content,
+    .mobile-time-popup .popup-content {
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+    }
+}
+
+/* Dark mode support (if needed) */
+@media (prefers-color-scheme: dark) {
+    .mobile-date-popup .popup-content,
+    .mobile-time-popup .popup-content {
+        background: #1f2937;
+        color: #f9fafb;
+    }
+    
+    .popup-header h4 {
+        color: #f9fafb;
+    }
+    
+    .popup-close {
+        color: #d1d5db;
+    }
+    
+    .popup-close:hover {
+        background: #374151;
+        color: #f9fafb;
+    }
+    
+    .day-cell:not(.disabled):not(.empty):not(.selected) {
+        color: #f9fafb;
+    }
+    
+    .day-cell:not(.disabled):not(.empty):hover {
+        background: #374151;
+        border-color: #6b7280;
+    }
+    
+    .time-slot {
+        background: #374151;
+        border-color: #4b5563;
+        color: #f9fafb;
+    }
+    
+    .time-slot:hover {
+        background: #4b5563;
+        border-color: #6b7280;
+    }
+}
+
+/* Accessibility enhancements */
+@media (prefers-reduced-motion: reduce) {
+    .mobile-date-popup .popup-content,
+    .mobile-time-popup .popup-content,
+    .time-slot,
+    .day-cell,
+    button {
+        animation: none !important;
+        transition: none !important;
+        transform: none !important;
+    }
+}
+
+/* Focus management for keyboard users */
+.mobile-date-popup:focus-within .popup-content,
+.mobile-time-popup:focus-within .popup-content {
+    box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.3);
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .mobile-date-popup .popup-content,
+    .mobile-time-popup .popup-content {
+        border: 2px solid #000;
+    }
+    
+    .day-cell.selected,
+    .time-slot.selected {
+        border: 3px solid #000;
+    }
+    
+    .btn-primary {
+        border: 2px solid #000;
+    }
+}
+
+/* Print styles (hide popups) */
+@media print {
+    .mobile-date-popup,
+    .mobile-time-popup {
+        display: none !important;
+    }
+}

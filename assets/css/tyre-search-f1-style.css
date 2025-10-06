@@ -1,0 +1,652 @@
+/**
+ * Blue Motors Southampton - Tyre Search Styles
+ * Formula One Autocentres inspired design
+ */
+
+/* ========================================
+   MAIN CONTAINER
+   ======================================== */
+
+.bms-tyre-search-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+}
+
+/* ========================================
+   MAIN HEADER - BLUE SECTION
+   ======================================== */
+
+.bms-main-header {
+    background: #1db756;
+    color: white;
+    padding: 40px 30px;
+    text-align: left;
+}
+
+.bms-main-header h1 {
+    margin: 0 0 15px 0;
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #1e5aa8;
+}
+
+.bms-main-header .subtitle {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.bms-main-header .description {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    max-width: 800px;
+}
+
+.price-promise {
+    color: #1e5aa8;
+    font-weight: bold;
+}
+
+.tyre-manufacturers {
+    color: #1e5aa8;
+    font-weight: bold;
+}
+
+.formula-one-centre {
+    color: #1e5aa8;
+    font-weight: bold;
+}
+
+/* ========================================
+   SEARCH TABS
+   ======================================== */
+
+.bms-search-tabs {
+    display: flex;
+    background: white;
+    border-bottom: 3px solid #e0e0e0;
+}
+
+.search-tab {
+    flex: 1;
+    padding: 20px;
+    text-align: center;
+    background: #f0f0f0;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #666;
+    transition: all 0.3s ease;
+}
+
+.search-tab.active {
+    background: #1e5aa8;
+    color: white;
+}
+
+.search-tab:hover:not(.active) {
+    background: #e0e0e0;
+}
+
+/* ========================================
+   SEARCH FORM SECTION
+   ======================================== */
+
+.bms-search-form {
+    background: white;
+    padding: 40px 30px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.search-content {
+    display: none;
+}
+
+.search-content.active {
+    display: block;
+}
+
+/* Registration Search */
+.reg-search-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    max-width: 600px;
+}
+
+.reg-input-wrapper {
+    position: relative;
+}
+
+.reg-input {
+    width: 200px;
+    height: 80px;
+    padding: 0 20px !important;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
+    border: 3px solid #e6b800 !important;
+    background: #f5cc11 !important;
+    color: #333 !important;
+    letter-spacing: 2px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+.reg-input:focus {
+    outline: none !important;
+    border-color: #007cba !important;
+    box-shadow: 0 0 0 3px rgba(245, 204, 17, 0.3) !important;
+    background-color: #f7d117 !important;
+}
+
+.reg-input::placeholder {
+    color: #666 !important;
+    font-weight: normal;
+    font-style: italic;
+}
+
+.brand-dropdown {
+    width: 200px;
+    height: 60px;
+    padding: 0 15px;
+    font-size: 1rem;
+    border: 2px solid #ccc;
+    background: white;
+}
+
+
+.search-btn {
+    height: 60px;
+    padding: 0 30px;
+    background: #28a745;
+    color: white;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background 0.3s ease;
+}
+
+.search-btn:hover {
+    background: #218838;
+}
+
+/* Size Search */
+.size-search-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.size-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.size-group label {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: bold;
+}
+
+.size-select {
+    width: 80px;
+    height: 50px;
+    padding: 0 10px;
+    font-size: 1rem;
+    border: 2px solid #ccc;
+    background: white;
+}
+
+.size-separator {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #666;
+    margin-top: 20px;
+}
+
+/* ========================================
+   PROCESS STEPS SECTION
+   ======================================== */
+
+.bms-process-section {
+    background: white;
+    padding: 50px 30px;
+}
+
+.process-header {
+    text-align: left;
+    margin-bottom: 40px;
+}
+
+.process-header h2 {
+    color: #1e5aa8;
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0 0 20px 0;
+    text-transform: uppercase;
+}
+
+.process-description {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #666;
+    max-width: 800px;
+}
+
+.process-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 40px;
+    margin-top: 40px;
+}
+
+.process-step {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.step-icon {
+    width: 80px;
+    height: 80px;
+    background: #f0f0f0;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: #1e5aa8;
+    flex-shrink: 0;
+}
+
+.step-content h3 {
+    color: #1e5aa8;
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin: 0 0 10px 0;
+    text-transform: uppercase;
+}
+
+.step-number {
+    background: #1e5aa8;
+    color: white;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.step-content p {
+    color: #666;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* ========================================
+   VEHICLE INFO DISPLAY
+   ======================================== */
+
+.vehicle-info-display {
+    background: #e8f4fd;
+    border: 2px solid #1e5aa8;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.vehicle-info-display h4 {
+    color: #1e5aa8;
+    margin: 0 0 15px 0;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.vehicle-details {
+    color: #333;
+}
+
+/* ========================================
+   LOADING STATE
+   ======================================== */
+
+.tyre-loading {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+}
+
+.loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid #e0e0e0;
+    border-top: 4px solid #1e5aa8;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+    color: #666;
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+/* ========================================
+   RESULTS SECTION
+   ======================================== */
+
+.tyre-results {
+    background: white;
+    padding: 30px;
+}
+
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.results-header h4 {
+    color: #1e5aa8;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+.results-count {
+    color: #666;
+    font-size: 1rem;
+}
+
+/* ========================================
+   TYRE FILTERS
+   ======================================== */
+
+.tyre-filters {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.filter-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filter-group label {
+    font-weight: bold;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.filter-group select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: white;
+    font-size: 0.95rem;
+}
+
+/* ========================================
+   TYRE CARDS
+   ======================================== */
+
+.tyre-results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 25px;
+}
+
+.tyre-card {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 25px;
+    transition: all 0.3s ease;
+}
+
+.tyre-card:hover {
+    border-color: #1e5aa8;
+    box-shadow: 0 4px 15px rgba(30, 90, 168, 0.15);
+}
+
+.tyre-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.tyre-brand {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.tyre-tier {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.tyre-tier.premium {
+    background: #ffd700;
+    color: #000;
+}
+
+.tyre-tier.mid-range {
+    background: #e0e0e0;
+    color: #333;
+}
+
+.tyre-tier.budget {
+    background: #28a745;
+    color: white;
+}
+
+.tyre-model {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.tyre-size {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #1e5aa8;
+    margin-bottom: 20px;
+}
+
+/* ========================================
+   PRICING SECTION
+   ======================================== */
+
+.tyre-pricing {
+    background: #f8f9fa;
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.price-row.total-row {
+    border-top: 2px solid #1e5aa8;
+    padding-top: 10px;
+    margin-top: 15px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #1e5aa8;
+}
+
+/* ========================================
+   QUANTITY AND ACTIONS
+   ======================================== */
+
+.quantity-selector {
+    margin-bottom: 20px;
+}
+
+.quantity-selector label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #333;
+}
+
+.tyre-quantity {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.btn-select-tyre {
+    width: 100%;
+    padding: 15px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background 0.3s ease;
+}
+
+.btn-select-tyre:hover {
+    background: #218838;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 768px) {
+    .bms-main-header {
+        padding: 30px 20px;
+    }
+    
+    .bms-main-header h1 {
+        font-size: 2rem;
+    }
+    
+    .bms-search-form {
+        padding: 30px 20px;
+    }
+    
+    .reg-search-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+    
+    .reg-input, .brand-dropdown, .search-btn {
+        width: 100%;
+    }
+    
+    .size-search-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+    
+    .size-group {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .size-select {
+        width: 100px;
+    }
+    
+    .process-steps {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .tyre-results-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .bms-process-section {
+        padding: 40px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .bms-main-header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .bms-main-header .subtitle {
+        font-size: 1rem;
+    }
+    
+    .search-tab {
+        padding: 15px 10px;
+        font-size: 0.9rem;
+    }
+    
+    .process-step {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .step-icon {
+        align-self: center;
+    }
+}
+
+/* ========================================
+   HIDDEN ELEMENTS
+   ======================================== */
+
+.bms-competitive-header {
+    display: none;
+}
+
+.bms-search-methods {
+    display: none;
+}

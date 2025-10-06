@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calendar Disappearing Fix Test</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin: 20px; background: #f0f2f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #059669, #22c55e); color: white; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 20px; }
+        .test-section { background: #f0fdf4; padding: 20px; margin: 15px 0; border-radius: 8px; border-left: 4px solid #22c55e; }
+        .calendar-demo { background: #dbeafe; padding: 25px; border-radius: 8px; margin: 20px 0; border: 2px solid #3b82f6; }
+        .console-output { background: #1f2937; color: #f9fafb; padding: 15px; border-radius: 8px; font-family: monospace; white-space: pre-wrap; height: 250px; overflow-y: auto; }
+        .test-btn { background: #059669; color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; margin: 5px; font-size: 16px; }
+        .test-btn:hover { background: #047857; }
+        .instructions { background: #fef3c7; border: 1px solid #f59e0b; padding: 20px; border-radius: 8px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔒 Calendar Disappearing Fix Test</h1>
+            <p>Testing the "sticky calendar" fix for the 1-second disappearing issue</p>
+        </div>
+
+        <div class="instructions">
+            <h3>📋 What This Test Does:</h3>
+            <ol>
+                <li><strong>Simulates testpage2 calendar behavior</strong></li>
+                <li><strong>Prevents calendar from disappearing</strong></li>
+                <li><strong>Shows console messages</strong> for debugging</li>
+                <li><strong>Tests multiple calendar methods</strong></li>
+            </ol>
+        </div>
+
+        <div class="calendar-demo">
+            <h3>📅 Calendar Test (Same as testpage2)</h3>
+            <p><strong>Try clicking the date field below:</strong></p>
+            
+            <div style="margin: 20px 0;">
+                <label for="fitting-date" style="display: block; margin-bottom: 8px; font-weight: bold;">
+                    📅 Select Appointment Date:
+                </label>
+                <input type="date" 
+                       id="fitting-date" 
+                       style="width: 100%; max-width: 300px; padding: 15px; border: 2px solid #3b82f6; border-radius: 8px; font-size: 18px;"
+                       min="">
+            </div>
+            
+            <div style="text-align: center; margin: 20px 0;">
+                <button class="test-btn" onclick="testCalendarSticky()">🧪 Test Sticky Calendar</button>
+                <button class="test-btn" onclick="debugCalendar()">🔍 Debug Calendar State</button>
+                <button class="test-btn" onclick="clearConsole()">🧹 Clear Console</button>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 Console Output</h3>
+            <div class="console-output" id="console-output">Waiting for calendar test...</div>
+        </div>
+
+        <div class="test-section">
+            <h3>🎯 Expected Behavior</h3>
+            <div>
+                <p><strong>✅ CORRECT:</strong> Calendar opens and stays visible until you select a date or click outside</p>
+                <p><strong>❌ PROBLEM:</strong> Calendar opens for 1 second then disappears</p>
+                <p><strong>🔧 FIX:</strong> Sticky mode prevents immediate disappearing</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+    // Set date input constraints
+    const today = new Date();
+    const minDate = new Date(today);
+    minDate.setDate(today.getDate() + 2);
+    const maxDate = new Date(today);  
+    maxDate.setDate(today.getDate() + 30);
+    
+    document.getElementById('fitting-date').min = minDate.toISOString().split('T')[0];
+    document.getElementById('fitting-date').max = maxDate.toISOString().split('T')[0];
+
+    // Console monitoring
+    let consoleMessages = [];
+    const originalConsole = {
+        log: console.log,
+        error: console.error,
+        warn: console.warn
+    };
+    
+    function logToOutput(message, type = 'log') {
+        const timestamp = new Date().toLocaleTimeString();
+        const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}`;
+        consoleMessages.push(logEntry);
+        
+        const output = document.getElementById('console-output');
+        output.textContent = consoleMessages.slice(-15).join('\n');
+        output.scrollTop = output.scrollHeight;
+        
+        originalConsole[type](message);
+    }
+    
+    // Override console
+    console.log = (msg) => logToOutput(msg, 'log');
+    console.error = (msg) => logToOutput(msg, 'error');
+    console.warn = (msg) => logToOutput(msg, 'warn');
+    
+    function clearConsole() {
+        consoleMessages = [];
+        document.getElementById('console-output').textContent = 'Console cleared...';
+    }
+    
+    // Sticky calendar implementation (same as WordPress fix)
+    let calendarStayOpen = false;
+    let dateInputElement = null;
+    
+    function initializeStickyCalendarTest() {
+        console.log('🔒 Initializing sticky calendar test...');
+        
+        dateInputElement = document.getElementById('fitting-date');
+        if (!dateInputElement) {
+            console.error('❌ Date input not found!');
+            return;
+        }
+        
+        console.log('✅ Date input found for sticky test');
+        
+        // Prevent blur events that close calendar
+        dateInputElement.addEventListener('blur', function(e) {
+            if (calendarStayOpen) {
+                console.log('🔒 Preventing calendar close via blur event');
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                
+                setTimeout(() => {
+                    if (calendarStayOpen) {
+                        dateInputElement.focus();
+                    }
+                }, 10);
+                
+                return false;
+            }
+        }, true);
+        
+        // Enhanced click handler
+        dateInputElement.addEventListener('click', function(e) {
+            console.log('📅 Date input clicked - enabling sticky mode for 20 seconds');
+            
+            calendarStayOpen = true;
+            
+            // Show calendar
+            setTimeout(() => {
+                showStickyCalendar();
+            }, 50);
+            
+            // Auto-disable after 20 seconds
+            setTimeout(() => {
+                if (calendarStayOpen) {
+                    calendarStayOpen = false;
+                    console.log('🔒 Sticky mode auto-disabled after 20s');
+                }
+            }, 20000);
+            
+            return true; // Allow normal behavior but keep sticky
+        });
+        
+        // Listen for date selection
+        dateInputElement.addEventListener('change', function(e) {
+            console.log('📅 Date selected:', e.target.value);
+            calendarStayOpen = false;
+            console.log('🔒 Sticky mode disabled - date selected');
+        });
+        
+        // Global click handler for outside clicks
+        document.addEventListener('click', function(e) {
+            if (calendarStayOpen && !dateInputElement.contains(e.target)) {
+                // Check if clicking on calendar
+                const isCalendarClick = (
+                    e.target.closest('.ui-datepicker') ||
+                    e.target.closest('[data-handler]') ||
+                    e.target.classList.contains('ui-state-default')
+                );
+                
+                if (!isCalendarClick) {
+                    console.log('🔒 Clicked outside calendar - disabling sticky mode');
+                    calendarStayOpen = false;
+                }
+            }
+        });
+        
+        console.log('✅ Sticky calendar test initialized');
+    }
+    
+    function showStickyCalendar() {
+        console.log('📅 Showing sticky calendar...');
+        
+        // Try native showPicker first
+        try {
+            if (typeof dateInputElement.showPicker === 'function') {
+                console.log('🎯 Using native showPicker...');
+                dateInputElement.showPicker();
+                
+                // Keep it focused to prevent disappearing
+                setTimeout(() => {
+                    if (calendarStayOpen) {
+                        dateInputElement.focus();
+                        console.log('🔒 Keeping calendar focused');
+                    }
+                }, 100);
+                
+                return;
+            }
+        } catch (error) {
+            console.warn('⚠️ showPicker failed:', error);
+        }
+        
+        // Fallback: focus and trigger events
+        console.log('🎯 Using focus/events fallback...');
+        dateInputElement.focus();
+        
+        const events = ['mousedown', 'click', 'focus'];
+        events.forEach(eventType => {
+            const event = new MouseEvent(eventType, { bubbles: true });
+            dateInputElement.dispatchEvent(event);
+        });
+        
+        // Keep focusing to prevent disappearing
+        let focusAttempts = 0;
+        const keepFocused = () => {
+            if (calendarStayOpen && focusAttempts < 8) {
+                dateInputElement.focus();
+                focusAttempts++;
+                console.log(`🔒 Keeping focused (attempt ${focusAttempts})`);
+                setTimeout(keepFocused, 300);
+            }
+        };
+        setTimeout(keepFocused, 100);
+    }
+    
+    function testCalendarSticky() {
+        console.log('🧪 Starting sticky calendar test...');
+        clearConsole();
+        
+        setTimeout(() => {
+            console.log('🎯 Click the date field now - it should stay open!');
+            console.log('📋 Expected: Calendar opens and stays visible');
+            console.log('❌ Problem: Calendar disappears after 1 second');
+        }, 1000);
+    }
+    
+    function debugCalendar() {
+        console.log('🔍 Debugging calendar state...');
+        console.log('Calendar sticky mode:', calendarStayOpen);
+        console.log('Date input element:', dateInputElement ? 'Found' : 'Not found');
+        console.log('Date input value:', dateInputElement?.value || 'None');
+        console.log('Date input focused:', document.activeElement === dateInputElement);
+        console.log('showPicker available:', typeof dateInputElement?.showPicker === 'function');
+    }
+    
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('📋 Calendar disappearing fix test page loaded');
+        setTimeout(initializeStickyCalendarTest, 500);
+    });
+    </script>
+</body>
+</html>

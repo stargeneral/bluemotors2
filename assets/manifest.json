@@ -1,0 +1,84 @@
+{
+    "version": 1755793457,
+    "generated": "2025-08-21 16:24:17",
+    "css": {
+        "combined.min.css": {
+            "path": "assets\/css\/combined.min.css",
+            "size": 27435,
+            "hash": "dfdd989dcf15954d8136954f1888879a"
+        },
+        "competitive-messaging.min.css": {
+            "path": "assets\/css\/competitive-messaging.min.css",
+            "size": 8783,
+            "hash": "1ed7b3444fad5333810844f2caf01d53"
+        },
+        "critical.min.css": {
+            "path": "assets\/css\/critical.min.css",
+            "size": 1207,
+            "hash": "a797aee9779b7486440f416cbb22444e"
+        },
+        "mobile-enhancements.min.css": {
+            "path": "assets\/css\/mobile-enhancements.min.css",
+            "size": 9729,
+            "hash": "b8de13c1f098b04c5b02c49eb824a775"
+        },
+        "public.min.css": {
+            "path": "assets\/css\/public.min.css",
+            "size": 4642,
+            "hash": "1f076171d0e97bd49657bd34a16317e4"
+        },
+        "tyre-search.min.css": {
+            "path": "assets\/css\/tyre-search.min.css",
+            "size": 9486,
+            "hash": "9f4f124b6663f62d696a403ad65a51cf"
+        },
+        "uk-date-styles.min.css": {
+            "path": "assets\/css\/uk-date-styles.min.css",
+            "size": 4038,
+            "hash": "63cccafbd35a57d7f6731b9af4b4eebb"
+        },
+        "vehicle-lookup.min.css": {
+            "path": "assets\/css\/vehicle-lookup.min.css",
+            "size": 9945,
+            "hash": "8dde5f69672607dd0a5b39b0c3a4fe5c"
+        }
+    },
+    "js": {
+        "booking.min.js": {
+            "path": "assets\/js\/booking.min.js",
+            "size": 4989,
+            "hash": "37dee4b7da719f34d85da0d6b35ec437"
+        },
+        "combined.min.js": {
+            "path": "assets\/js\/combined.min.js",
+            "size": 42716,
+            "hash": "fe4b6116da3f492c74f32e24c0ff02c3"
+        },
+        "competitive-messaging.min.js": {
+            "path": "assets\/js\/competitive-messaging.min.js",
+            "size": 169,
+            "hash": "c56c1043696de8687ddd0151921a55f4"
+        },
+        "payment-improvements.min.js": {
+            "path": "assets\/js\/payment-improvements.min.js",
+            "size": 7767,
+            "hash": "5d4ba46c9014afdea81f6d5af7e61b2e"
+        },
+        "tyre-booking.min.js": {
+            "path": "assets\/js\/tyre-booking.min.js",
+            "size": 22869,
+            "hash": "735fb20d67474f54ca3b701d1b81ea9e"
+        },
+        "uk-date-handler.min.js": {
+            "path": "assets\/js\/uk-date-handler.min.js",
+            "size": 6636,
+            "hash": "fcc4d24ed3d60d457f2cb63b2780cd68"
+        },
+        "vehicle-lookup.min.js": {
+            "path": "assets\/js\/vehicle-lookup.min.js",
+            "size": 14659,
+            "hash": "81efa0ff4266acd1d7c45b8ca1fda8a3"
+        }
+    },
+    "critical_css": "assets\/css\/critical.min.css"
+}
