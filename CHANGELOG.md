@@ -2,6 +2,13 @@
 
 All notable changes to Blue Motors Southampton plugin will be documented in this file.
 
+## [1.4.1] - 2025-10-06
+
+### Fixed
+- Resolved duplicate `BM_PLUGIN_DIR` constant definition warning on all pages
+- Added missing location constants (`BM_LOCATION_ADDRESS`, `BM_LOCATION_PHONE`, `BM_LOCATION_EMAIL`) to fix fatal error on booking page
+- Reordered constant loading sequence to prevent conflicts between main plugin file and config file
+
 ## [1.4.0] - 2025-01-29 - GOOGLE CALENDAR & TYRE SERVICES RELEASE 🚀
 
 ### Added

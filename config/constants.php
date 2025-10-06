@@ -35,6 +35,11 @@ define('BM_BUSINESS_ADDRESS', '1 Kent St, Northam, Southampton SO14 5SP');
 define('BM_BUSINESS_PHONE', '023 8000 0000');
 define('BM_BUSINESS_EMAIL', 'southampton@bluemotors.co.uk');
 
+// Location aliases (used by templates for consistency)
+define('BM_LOCATION_ADDRESS', BM_BUSINESS_ADDRESS);
+define('BM_LOCATION_PHONE', BM_BUSINESS_PHONE);
+define('BM_LOCATION_EMAIL', BM_BUSINESS_EMAIL);
+
 // Operating Hours
 define('BM_OPENING_TIME', '08:00');
 define('BM_CLOSING_TIME', '18:00');

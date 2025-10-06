@@ -35,13 +35,14 @@ define('BMS_PLUGIN_BASENAME', plugin_basename(__FILE__));
 define('BMS_MIN_PHP_VERSION', '8.0');
 define('BMS_MIN_WP_VERSION', '6.0');
 
-// Compatibility alias for BM_PLUGIN_DIR (used by our service classes)
+// Load configuration (this will define BM_PLUGIN_DIR and other constants)
+require_once BMS_PLUGIN_DIR . 'config/constants.php';
+
+// Compatibility check - BM_PLUGIN_DIR should now be defined by constants.php
 if (!defined('BM_PLUGIN_DIR')) {
+    // Fallback if constants.php somehow didn't define it
     define('BM_PLUGIN_DIR', BMS_PLUGIN_DIR);
 }
-
-// Load configuration
-require_once BMS_PLUGIN_DIR . 'config/constants.php';
 require_once BMS_PLUGIN_DIR . 'includes/shortcode-callbacks.php';
 require_once BMS_PLUGIN_DIR . 'includes/shortcode-init.php';
 require_once BMS_PLUGIN_DIR . 'includes/shortcode-handlers-fallback.php'; // Fallback handlers for missing shortcodes
